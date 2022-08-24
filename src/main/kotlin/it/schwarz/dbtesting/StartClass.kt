@@ -10,7 +10,7 @@ class StartClass (val request: RequestDataService, val testService: TestService)
 
     @PostConstruct
     fun startApplication() {
-        val dataByUserQuery = request.getDataByInput(request.getUserInput())
+        val dataByUserQuery = request.getDataByInput("Test Input")
         val expectedData = request.getExpectedOutput()
         //testService.compareDataByUserQueryAndExpectedResult(dataByUserQuery, testData)
     }

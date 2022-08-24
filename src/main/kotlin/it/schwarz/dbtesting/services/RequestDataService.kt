@@ -6,26 +6,23 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import it.schwarz.dbtesting.models.QueryModel
 import it.schwarz.dbtesting.repositories.QueryRepository
 import org.bson.Document
-import org.bson.json.JsonObject
 import org.springframework.stereotype.Service
 import java.io.File
 
 @Service
 class RequestDataService(private val queryRepos: QueryRepository) {
 
-    fun getExpectedOutput(): String {
+    fun getExpectedOutput(): List<QueryModel> {
         val mapper = jacksonObjectMapper()
         mapper.registerKotlinModule()
         mapper.registerModule(JavaTimeModule())
         val jsonString: String = File("./src/main/resources/assets/MockData.json").readText(Charsets.UTF_8)
         val jsonArr = getJsonArrayFromJsonString(jsonString)
-        var queryList = getQueryFromEveryArray(jsonArr)
-        println(queryList[0].query)
-        println(queryList[1].query)
-        return ""
+        return getQueryFromEveryArray(jsonArr)
     }
 
     fun getDataByInput(userQueryInput: String): List<QueryModel> {
+
         val queryList: List<QueryModel> = queryRepos.findAll()
         return queryList
     }
@@ -61,13 +58,11 @@ class RequestDataService(private val queryRepos: QueryRepository) {
     fun getQueryFromEveryArray(jsonArr: List<String>): List<QueryModel> {
         var docList = getDocForEveryQuery(jsonArr)
         var queryList: MutableList<QueryModel> = arrayListOf()
-        var queryModel = QueryModel()
         var f = 0
-        for (item in docList) {
-            queryModel.query = item.getString("query")
+        for (i in docList.indices) {
+            var queryModel = QueryModel()
+            queryModel.query = docList[i].getString("query")
             queryList.add(queryModel)
-            println(queryList[f].query)
-            f++
         }
         return queryList
     }
