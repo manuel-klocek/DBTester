@@ -18,6 +18,11 @@ To start we consider the following scenario:
 
 # Comments by Alex
 
+## Possible TODOs
+- spring config
+- read a file in kotlin
+- json handling with jackson
+
 ## 25.08.2022
 
 ### Prefer val over var in Kotlin
@@ -38,6 +43,16 @@ This is the variant of Spring MongoDB access we use everywhere our project.
 
 ## 24.08.2022
 
+### Spring Application Context
+The Spring Application Context is contains beans.
+Beans are instances of Java Classes.
+For example, Spring finds classes annotated with @Service on startup.
+This is called ComponentScan and is enabled by the @ComponentScan annotation (included in @SpringBootApplication).
+In this case every service is instantiated once (Singleton) given that Spring can find the required 
+constructor parameters in the application context.
+There are other beans that do configuration.
+For example, they come with spring boot starters which can be included as a maven dependency (we have some in this project).
+
 ### gitignore
 If you use git put a .gitignore file next to he .git folder.
 Files starting with a dot are hidden in Unix (macOS is Unix-like).
@@ -53,8 +68,3 @@ Start them in a container using docker-compose.
 
 - docker-compose -f mongo-docker-compose.yaml up -d
 - docker-compose -f mongo-docker-compose.yaml down
-
-## Possible TODOs
-- spring config
-- read a file in kotlin
-- json handling with jackson
