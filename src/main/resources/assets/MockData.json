@@ -1,8 +1,4 @@
 [{
-  "id": 1,
-  "query": "Select * From something"
-},
-{
-  "id":  2,
-  "query":  "Insert Into TABLE Values some"
+  "id": "6308804cec53426d92136fa8",
+  "query": "Something"
 }]

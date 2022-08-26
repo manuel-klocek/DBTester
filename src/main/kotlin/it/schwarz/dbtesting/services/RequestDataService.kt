@@ -43,8 +43,11 @@ class RequestDataService(private val mongoConf: MongoConfig) {
         val queryModelList: MutableList<QueryModel> = arrayListOf()
         for(item in json) {
             val queryModel = QueryModel()
-            queryModel.id = item.findValue("id").toString()
-            queryModel.query = item.findValue("query").toString()
+            //Comes with "" in String
+            val queryItemId = item.findValue("id").toString()
+            val queryItemQuery = item.findValue("query").toString()
+            queryModel.id = queryItemId.substring(1, queryItemId.length - 1)
+            queryModel.query = queryItemQuery.substring(1, queryItemQuery.length - 1)
             queryModelList.add(queryModel)
         }
         return queryModelList
