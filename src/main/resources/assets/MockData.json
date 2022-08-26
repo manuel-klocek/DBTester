@@ -3,6 +3,6 @@
   "query": "Select * From something"
 },
 {
-  "id:":  2,
+  "id":  2,
   "query":  "Insert Into TABLE Values some"
 }]

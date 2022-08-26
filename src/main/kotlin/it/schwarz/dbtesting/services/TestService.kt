@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class TestService {
-    fun compareDataByUserQueryAndExpectedResult(dataByUserQuery: List<QueryModel>, testData: List<QueryModel>) {
+    fun compareDataByUserQueryAndExpectedResult(dataByUserQuery: List<QueryModel>, expectedData: List<QueryModel>) {
 
     }
 }
