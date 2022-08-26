@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import it.schwarz.dbtesting.configs.MongoConfig
 import it.schwarz.dbtesting.models.QueryModel
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Service
@@ -18,6 +17,7 @@ import javax.annotation.PostConstruct
 @Service
 class RequestDataService(private val mongoConf: MongoConfig) {
 
+    private final val COLLECTION_NAME = "DBTesting"
     private lateinit var mongo: MongoTemplate
     @PostConstruct
     fun setMongoTemp(){
@@ -56,6 +56,6 @@ class RequestDataService(private val mongoConf: MongoConfig) {
     fun getDataByInput(userQueryInput: String): List<QueryModel> {
         val query = Query()
         query.addCriteria(Criteria.where("query").`is`(userQueryInput))
-        return mongo.find(query, "DBTesting")
+        return mongo.find(query, QueryModel::class.java, COLLECTION_NAME).toList()
     }
 }
