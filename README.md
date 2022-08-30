@@ -22,7 +22,10 @@ To start we consider the following scenario:
 - spring config
 - persist given, query and want in a mongodb
 - if got != want: what is the difference? show both? show where they differ?
-- build a UI to show how test cases might be presented
+- have a rest endpoint to execute a test suite
+- build a web UI to show how test cases might be presented
+- postgres test cases
+- OpenAPI description of the API
 
 ## 30.08.2022
 
@@ -35,12 +38,15 @@ query == the database query to test
 want == the expected result
 got == the result of the query after execution on the db
 case == a test case including given, query and want
+suite == a test suit consisting of multiple cases
 
 ### Rest API to read and write given, query, and want
 - the user wants to create, read, update and delete (CRUD) givens, queries and wants
 - use @RequestBody document: Document to get the body from the http request
 - http methods: GET = read, POST = create, PUT = update, DELETE = remove
 - you do not need to use POST; a single PUT can serve as both (upsert)
+
+To call your rest api you can use Postman or curl.
 
 ## 25.08.2022
 
