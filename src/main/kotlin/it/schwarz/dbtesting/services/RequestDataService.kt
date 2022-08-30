@@ -21,7 +21,7 @@ class RequestDataService(private val mongoConf: MongoConfig) {
     private lateinit var mongo: MongoTemplate
     @PostConstruct
     fun setMongoTemp(){
-        mongo = mongoConf.mongoTemplate()
+        mongo = mongoConf.getMongoTemplate()
     }
 
     fun getExpectedOutput(): List<QueryModel> {
@@ -36,6 +36,7 @@ class RequestDataService(private val mongoConf: MongoConfig) {
         val mapper = jacksonObjectMapper()
         mapper.registerKotlinModule()
         mapper.registerModule(JavaTimeModule())
+
         return mapper.readTree(File("./src/main/resources/assets/MockData.json"))
     }
 
@@ -43,11 +44,8 @@ class RequestDataService(private val mongoConf: MongoConfig) {
         val queryModelList: MutableList<QueryModel> = arrayListOf()
         for(item in json) {
             val queryModel = QueryModel()
-            //Comes with "" in String
-            val queryItemId = item.findValue("id").toString()
-            val queryItemQuery = item.findValue("query").toString()
-            queryModel.id = queryItemId.substring(1, queryItemId.length - 1)
-            queryModel.query = queryItemQuery.substring(1, queryItemQuery.length - 1)
+            queryModel.id = item.findValue("id").asText()
+            queryModel.query = item.findValue("query").asText()
             queryModelList.add(queryModel)
         }
         return queryModelList

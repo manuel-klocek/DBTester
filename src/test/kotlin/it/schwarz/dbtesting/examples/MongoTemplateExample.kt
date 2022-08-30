@@ -11,6 +11,8 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 
+
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoTemplateExample {
 
@@ -23,6 +25,8 @@ class MongoTemplateExample {
         //start the mongo container before: docker-compose -f
         val client = MongoClients.create("mongodb://localhost:27028")
         mongoTemplate = MongoTemplate(client, "database")
+
+        val x = object {}.javaClass.getResource("fileName")?.readText() ?: ""
     }
 
     @AfterEach

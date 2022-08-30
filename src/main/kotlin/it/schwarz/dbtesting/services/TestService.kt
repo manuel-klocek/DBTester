@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class TestService {
-    fun compareDataByUserQueryAndExpectedResult(dataByUserQuery: List<QueryModel>, expectedData: List<QueryModel>) {
-        if(!compareListsByLength(dataByUserQuery, expectedData)) println("Size is different!")
-        if(!compareListsByContent(dataByUserQuery, expectedData)) println("Content is different!")
+    fun compare(got: List<QueryModel>, want: List<QueryModel>) {
+        if(!compareListsByLength(got, want)) println("Size is different!")
+        if(!compareListsByContent(got, want)) println("Content is different!")
     }
 
     private fun compareListsByLength(dataByUserQuery: List<QueryModel>, expectedData: List<QueryModel>): Boolean {
