@@ -23,9 +23,7 @@ class TestService {
 
     private fun checkForSameEntry(itemByUserQuery: QueryModel, expectedData: List<QueryModel>): Boolean {
         for(expected in expectedData) {
-            if(itemByUserQuery.id == expected.id) {
-                return true
-            }
+            if(itemByUserQuery.id == expected.id) return true
         }
         return false
     }
