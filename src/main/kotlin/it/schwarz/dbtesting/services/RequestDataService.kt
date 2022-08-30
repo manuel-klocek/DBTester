@@ -1,11 +1,9 @@
 package it.schwarz.dbtesting.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import it.schwarz.dbtesting.configs.MongoConfig
-import it.schwarz.dbtesting.models.QueryModel
+import org.bson.Document
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -14,46 +12,34 @@ import java.io.File
 import javax.annotation.PostConstruct
 
 
+private const val COLLECTION_NAME = "DBTesting"
 @Service
 class RequestDataService(private val mongoConf: MongoConfig) {
 
-    private final val COLLECTION_NAME = "DBTesting"
     private lateinit var mongo: MongoTemplate
     @PostConstruct
     fun setMongoTemp(){
         mongo = mongoConf.getMongoTemplate()
     }
 
-    fun getExpectedOutput(): List<QueryModel> {
-        return getListOfQueries()
-    }
-
-    private fun getListOfQueries(): MutableList<QueryModel> {
-        return mapJsonNodeToQueryModel(getJsonNode())
-    }
-
-    private fun getJsonNode(): JsonNode {
+    fun getExpectedOutput(): List<Document> {
         val mapper = jacksonObjectMapper()
-        mapper.registerKotlinModule()
-        mapper.registerModule(JavaTimeModule())
-
-        return mapper.readTree(File("./src/main/resources/assets/MockData.json"))
+        return mapper.readValue(File("./src/main/resources/assets/want.json").readText())
     }
 
-    private fun mapJsonNodeToQueryModel(json: JsonNode): MutableList<QueryModel> {
-        val queryModelList: MutableList<QueryModel> = arrayListOf()
-        for(item in json) {
-            val queryModel = QueryModel()
-            queryModel.id = item.findValue("id").asText()
-            queryModel.query = item.findValue("query").asText()
-            queryModelList.add(queryModel)
-        }
-        return queryModelList
-    }
-
-    fun getDataByInput(userQueryInput: String): List<QueryModel> {
+    fun getDataByQuery(): List<Document> {
         val query = Query()
-        query.addCriteria(Criteria.where("query").`is`(userQueryInput))
-        return mongo.find(query, QueryModel::class.java, COLLECTION_NAME).toList()
+        query.addCriteria(Criteria.where(getQuery()))
+        val test = listOf(
+            Document(
+                "\$match",
+                Document("name", "Marcus Aurelius")
+            )
+        )
+        return mongo.db.getCollection(COLLECTION_NAME).aggregate(test).toList()
+    }
+
+    private fun getQuery(): String {
+        return object {}.javaClass.getResource("/assets/query.json")!!.readText()
     }
 }
