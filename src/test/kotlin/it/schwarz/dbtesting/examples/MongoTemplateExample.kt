@@ -25,8 +25,6 @@ class MongoTemplateExample {
         //start the mongo container before: docker-compose -f
         val client = MongoClients.create("mongodb://localhost:27028")
         mongoTemplate = MongoTemplate(client, "database")
-
-        val x = object {}.javaClass.getResource("fileName")?.readText() ?: ""
     }
 
     @AfterEach

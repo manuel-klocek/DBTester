@@ -9,9 +9,9 @@ import javax.annotation.PostConstruct
 class StartClass (val request: RequestDataService, val testService: TestService) {
 
     @PostConstruct
-    fun startApplication() {
-        val got = request.getDataByInput("Something")
+    fun startApplication(): Boolean {
+        val got = request.getDataByQuery()
         val want = request.getExpectedOutput()
-        testService.compare(got, want)
+        return testService.compare(got, want)
     }
 }

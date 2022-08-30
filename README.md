@@ -20,8 +20,6 @@ To start we consider the following scenario:
 
 ## Possible TODOs
 - spring config
-- read a file in kotlin
-- json handling with jackson
 
 ## 25.08.2022
 
