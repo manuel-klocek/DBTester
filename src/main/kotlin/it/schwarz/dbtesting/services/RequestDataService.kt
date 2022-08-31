@@ -5,8 +5,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import it.schwarz.dbtesting.configs.MongoConfig
 import org.bson.Document
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Service
 import java.io.File
 import javax.annotation.PostConstruct
@@ -28,18 +26,13 @@ class RequestDataService(private val mongoConf: MongoConfig) {
     }
 
     fun getDataByQuery(): List<Document> {
-        val query = Query()
-        query.addCriteria(Criteria.where(getQuery()))
         val test = listOf(
             Document(
                 "\$match",
                 Document("name", "Marcus Aurelius")
             )
         )
+        println(test)
         return mongo.db.getCollection(COLLECTION_NAME).aggregate(test).toList()
-    }
-
-    private fun getQuery(): String {
-        return object {}.javaClass.getResource("/assets/query.json")!!.readText()
     }
 }
