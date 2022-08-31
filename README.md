@@ -3,23 +3,42 @@
 We have many database queries in ADBS and RTDS written by our user that do not have automated tests.
 If our users where to be able to define test cases for their queries they could change them more safely.
 
-A test case has three steps:
-1. Prepare a database with test data
-2. Execute a database query
-3. Check the results
+Ubiquitous Language:
+- given == data to prepare a test
+- query == the database query to test
+- want == the expected result
+- got == the result of the query after execution on the db
+- case == a test case including given, query and want
+- suite == a test suit consisting of multiple cases
 
-Initially we focus on MongoDB.
-Here, input data, query and output data are all in json format.
+Executing a test case:
+- insert given data into database
+- execute query
+- compare the result you got with the thing you want
 
-To start we consider the following scenario:
-1. fill a single collection with data
-2. run an agrgegation on it
-3. check if the aggregatione returns the correct number of documents
+Initial focus on MongoDB
+- here given, query, want and got are all in json format.
+
+# TODO
+
+### Rest API to read and write given, query, and want
+- the user wants to create, read, update and delete (CRUD) givens, queries and wants
+- use @RequestBody document: Document to get the body from the http request
+- http methods: GET = read, POST = create, PUT = update, DELETE = remove
+- you do not need to use POST; a single PUT can serve as both (upsert)
+
+To call your rest api you can use Postman or curl.
+
+### Ideas
+- spring config
+- persist given, query and want in a mongodb
+- if got != want: what is the difference? show both? show where they differ?
+- have a rest endpoint to execute a test suite
+- build a web UI to show how test cases might be presented
+- postgres test cases
+- OpenAPI description of the API
 
 # Comments by Alex
-
-## Possible TODOs
-- spring config
 
 ## 25.08.2022
 
@@ -46,7 +65,7 @@ The Spring Application Context is contains beans.
 Beans are instances of Java Classes.
 For example, Spring finds classes annotated with @Service on startup.
 This is called ComponentScan and is enabled by the @ComponentScan annotation (included in @SpringBootApplication).
-In this case every service is instantiated once (Singleton) given that Spring can find the required 
+In this case every service is instantiated once (Singleton) given that Spring can find the required
 constructor parameters in the application context.
 There are other beans that do configuration.
 For example, they come with spring boot starters which can be included as a maven dependency (we have some in this project).
@@ -61,7 +80,7 @@ In Angular the .gitignore File is created when you scaffold your project with th
 
 ### start database in docker container
 Its best not to install database or messaging directly on your machine.
-This way you can get rid of the database easily and keep your machine cleaner. 
+This way you can get rid of the database easily and keep your machine cleaner.
 Start them in a container using docker-compose.
 
 - docker-compose -f mongo-docker-compose.yaml up -d
