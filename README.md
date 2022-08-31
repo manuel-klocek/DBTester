@@ -29,9 +29,13 @@ Initial focus on MongoDB
 
 To call your rest api you can use Postman or curl.
 
+### Persistence
+The test cases have to be stored.
+Since we use MongoDB in ADBS/RTDS we should use it here as well.
+This means every http request creates a database statement.
+
 ### Ideas
 - spring config
-- persist given, query and want in a mongodb
 - if got != want: what is the difference? show both? show where they differ?
 - have a rest endpoint to execute a test suite
 - build a web UI to show how test cases might be presented
