@@ -26,6 +26,7 @@ Initial focus on MongoDB
 - use @RequestBody document: Document to get the body from the http request
 - http methods: GET = read, POST = create, PUT = update, DELETE = remove
 - you do not need to use POST; a single PUT can serve as both (upsert)
+- automated tests with spring (send http request)
 
 To call your rest api you can use Postman or curl.
 
@@ -34,13 +35,35 @@ The test cases have to be stored.
 Since we use MongoDB in ADBS/RTDS we should use it here as well.
 This means every http request creates a database statement.
 
-### Ideas
-- spring config
-- if got != want: what is the difference? show both? show where they differ?
-- have a rest endpoint to execute a test suite
-- build a web UI to show how test cases might be presented
-- postgres test cases
-- OpenAPI description of the API
+## Config
+If you deploy an application in multiple environments some it usually has to be configured.
+If the app uses a database the connection string might be different for each environment.
+For this you can read the configuration from a file or from environment variables.
+
+Environment variables are part of the operating system.
+Each docker container also has its own environment variables. 
+You can see them in Unix-like systems using "env" in the terminal.
+Spring has a built-in way how to do configuration.
+
+## Feedback when test case fails
+If a test fails (got != want) the user needs to know why it failed.
+A start is to tell the user how got differs from want.
+Also, if any errors occur the user should be notified. 
+
+## Rest endpoint to execute a test case or suite
+If the user want to run some tests he should be able to do so via rest api. 
+
+## Web UI
+build a web UI to show how test cases might be presented to our BC colleagues.
+If this is done well we might be able to integrate it into the actual application.
+(Angular?)
+
+## OpenAPI description of the API
+The current way to describe a rest api is via open api specification.
+This specification comes in the form of a yaml file.
+This yaml file can be served by a webapp.
+You can test the http requests in this app.
+(In spring openapi is done via annotations)
 
 # Comments by Alex
 
