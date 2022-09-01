@@ -1,3 +1,10 @@
-[{"$match": {
-  "name": "Marcus Aurelius"
-}}]
+{
+  "header": "Test",
+  "payload": [
+    {
+      "$match": {
+        "name": "Marcus Aurelius"
+      }
+    }
+  ]
+}

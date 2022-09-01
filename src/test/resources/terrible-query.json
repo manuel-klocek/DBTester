@@ -1,3 +1,6 @@
+{
+  "header": "Test",
+  "payload" :
 [{
   "$match": {
     "$or": [{
@@ -1163,4 +1166,4 @@
   "updateFilter": "PRODUCT,LOCATION,uploadDate",
   "updatePush": "livestock=livestock,execTime,Validstock,sales,rundate,writeOffs,store_claim,store_return,store_transfer,stockchanges,formCorrections,returns,stockIndicator",
   "replaceArray": false
-}}]
+}}]}
