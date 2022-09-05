@@ -29,6 +29,9 @@ Initial focus on MongoDB
 
 To call your rest api you can use Postman or curl.
 
+#### Comment by Manuel
+- when Put is called checking for Entry in DB => if Item not existing Feedback => to use PostMethod instead (since far Console Output)
+
 ### Ideas
 - spring config
 - persist given, query and want in a mongodb

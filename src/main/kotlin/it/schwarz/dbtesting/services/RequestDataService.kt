@@ -2,12 +2,11 @@ package it.schwarz.dbtesting.services
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.mongodb.MongoBulkWriteException
 import com.mongodb.client.MongoCollection
 import it.schwarz.dbtesting.configs.MongoConfig
 import org.bson.Document
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.io.File
 import javax.annotation.PostConstruct
@@ -34,12 +33,25 @@ class RequestDataService(private val mongoConf: MongoConfig) {
         return db.aggregate(query).toList()
     }
 
-    fun deleteQueryById(id: Int) {
-        db.deleteOne(Document("_id", 1))
+    fun deleteSingleEntry(got: List<Document>): Boolean {
+        return db.findOneAndDelete(got[0]) !== null
     }
 
-    fun createMultipleQueries(payload: List<Document>): ResponseEntity<HttpStatus> {
-        db.insertMany(payload)
-        return ResponseEntity.ok(HttpStatus.CREATED)
+    fun createMultipleEntries(got: List<Document>): Boolean {
+        try {
+            db.insertMany(got)
+        } catch (ex: MongoBulkWriteException) {
+            println("Item with same Id already exists!")
+            return false
+        }
+        return true
+    }
+
+    fun updateSingleEntry(got: List<Document>, want: List<Document>): Boolean {
+        return db.findOneAndReplace(got[0], want[0]) !== null
+    }
+
+    fun checkForEntryInDB(got: List<Document>): Boolean {
+        return !db.find(got[0]).equals("[]")
     }
 }

@@ -5,4 +5,5 @@ import org.bson.Document
 class DocumentModel {
     var header: String = ""
     var payload: List<Document> = arrayListOf()
+    var replace: List<Document>? = arrayListOf()
 }
