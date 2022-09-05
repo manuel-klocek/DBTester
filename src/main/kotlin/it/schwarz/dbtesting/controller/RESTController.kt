@@ -1,7 +1,9 @@
 package it.schwarz.dbtesting.controller
 
 import it.schwarz.dbtesting.models.DocumentModel
+import it.schwarz.dbtesting.models.TestModel
 import it.schwarz.dbtesting.services.RequestDataService
+import it.schwarz.dbtesting.services.TestService
 import org.bson.Document
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/")
-class RESTController(private val request: RequestDataService) {
+class RESTController(private val request: RequestDataService, private val test: TestService) {
 
     @GetMapping("getAll")
     fun getAllEntries(): ResponseEntity<List<Document>> {
@@ -24,6 +26,13 @@ class RESTController(private val request: RequestDataService) {
     @GetMapping("getByQuery")
     fun getEntriesByQuery(@RequestBody docModel: DocumentModel): ResponseEntity<List<Document>> {
         return ResponseEntity.ok(request.getDataByQuery(docModel.payload))
+    }
+
+    @GetMapping("test")
+    fun testQuery(@RequestBody testModel: TestModel): ResponseEntity<String> {
+        val got = request.getDataByQuery(testModel.query)
+        val want = testModel.want
+        return ResponseEntity.ok(test.compare(got, want).toString())
     }
 
     @PostMapping("post")
