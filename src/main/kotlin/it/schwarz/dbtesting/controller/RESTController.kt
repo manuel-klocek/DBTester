@@ -2,6 +2,7 @@ package it.schwarz.dbtesting.controller
 
 import it.schwarz.dbtesting.models.DocumentModel
 import it.schwarz.dbtesting.models.TestModel
+import it.schwarz.dbtesting.services.DifferService
 import it.schwarz.dbtesting.services.RequestDataService
 import it.schwarz.dbtesting.services.TestService
 import org.bson.Document
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/")
-class RESTController(private val request: RequestDataService, private val test: TestService) {
+class RESTController(private val request: RequestDataService,
+                     private val test: TestService,
+                     private val differ: DifferService) {
 
     @GetMapping("getAll")
     fun getAllEntries(): ResponseEntity<List<Document>> {
-        return ResponseEntity.ok(request.getDataByQuery(arrayListOf<Document>()))
+        return ResponseEntity.ok(request.getDataByQuery(arrayListOf()))
     }
 
     @GetMapping("get/{id}")
@@ -29,10 +32,12 @@ class RESTController(private val request: RequestDataService, private val test: 
     }
 
     @GetMapping("test")
-    fun testQuery(@RequestBody testModel: TestModel): ResponseEntity<String> {
+    fun testQuery(@RequestBody testModel: TestModel): ResponseEntity<List<String>> {
         val got = request.getDataByQuery(testModel.query)
         val want = testModel.want
-        return ResponseEntity.ok(test.compare(got, want).toString())
+        var difference = listOf<String>()
+        if(!test.compare(got, want)) difference = differ.getDifference(got, want)
+        return ResponseEntity.ok(difference)
     }
 
     @PostMapping("post")
