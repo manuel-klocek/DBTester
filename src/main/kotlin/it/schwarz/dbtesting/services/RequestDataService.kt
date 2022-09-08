@@ -3,6 +3,7 @@ package it.schwarz.dbtesting.services
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mongodb.MongoBulkWriteException
+import com.mongodb.MongoCommandException
 import com.mongodb.client.MongoCollection
 import it.schwarz.dbtesting.configs.MongoConfig
 import org.bson.Document
@@ -34,7 +35,12 @@ class RequestDataService(private val mongoConf: MongoConfig) {
     }
 
     fun deleteSingleEntry(got: List<Document>): Boolean {
-        return db.findOneAndDelete(got[0]) !== null
+        try {
+            db.findOneAndDelete(got[0])
+        } catch(ex: MongoCommandException) {
+            println("Please use the element itself! Query is not supported within this function")
+        }
+        return true
     }
 
     fun createMultipleEntries(got: List<Document>): Boolean {

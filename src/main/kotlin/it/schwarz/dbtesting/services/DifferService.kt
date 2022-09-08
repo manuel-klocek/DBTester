@@ -1,11 +1,12 @@
 package it.schwarz.dbtesting.services
 
+import it.schwarz.dbtesting.models.DifferenceModel
 import org.bson.Document
 import org.springframework.stereotype.Service
 
 @Service
 class DifferService {
-    fun getDifference(want: List<Document>, got: List<Document>): List<String> {
+    fun getDifference(want: List<Document>, got: List<Document>): List<DifferenceModel> {
         //list for every 1st Level key including its value
         val gotList: MutableList<String> = arrayListOf()
         got.spliterator().forEachRemaining{ doc -> doc.mapKeys {
@@ -23,15 +24,17 @@ class DifferService {
         }
 
         //list of differences
-        val differList: MutableList<String> = arrayListOf()
+        val differList: MutableList<DifferenceModel> = arrayListOf()
         for((index, element) in biggerList.withIndex()) {
+            val diffModel = DifferenceModel()
             if(index >= smallerList.size){
-                differList.add(element)
-                differList.add("Missing!")
+                diffModel.expected = element
+                diffModel.got = ("Missing!")
             } else if(element != smallerList[index]) {
-                differList.add(element)
-                differList.add(smallerList[index])
+                diffModel.expected = element
+                diffModel.got = smallerList[index]
             }
+            differList.add(diffModel)
         }
         return differList
     }

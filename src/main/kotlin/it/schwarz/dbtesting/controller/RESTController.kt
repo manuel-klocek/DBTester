@@ -1,5 +1,8 @@
 package it.schwarz.dbtesting.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import it.schwarz.dbtesting.models.DifferenceModel
 import it.schwarz.dbtesting.models.DocumentModel
 import it.schwarz.dbtesting.models.TestModel
 import it.schwarz.dbtesting.services.DifferService
@@ -11,6 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@CrossOrigin
 @RequestMapping("/")
 class RESTController(private val request: RequestDataService,
                      private val test: TestService,
@@ -31,22 +35,24 @@ class RESTController(private val request: RequestDataService,
         return ResponseEntity.ok(request.getDataByQuery(docModel.payload))
     }
 
-    @GetMapping("test")
-    fun testQuery(@RequestBody testModel: TestModel): ResponseEntity<List<String>> {
+    //TODO Change Frontend to Content-Type Json not plain text
+    @PostMapping("test")
+    fun testQuery(@RequestBody testModelString: String): ResponseEntity<List<DifferenceModel>> {
+        val testModel: TestModel = ObjectMapper().readValue(testModelString)
         val got = request.getDataByQuery(testModel.query)
         val want = testModel.want
-        var difference = listOf<String>()
+        var difference = listOf<DifferenceModel>()
         if(!test.compare(got, want)) difference = differ.getDifference(got, want)
         return ResponseEntity.ok(difference)
     }
 
-    @PostMapping("post")
+    @PostMapping("create")
     fun addMultipleEntries(@RequestBody docModel: DocumentModel): ResponseEntity<HttpStatus> {
         request.createMultipleEntries(docModel.payload)
         return ResponseEntity.ok(HttpStatus.CREATED)
     }
 
-    @PutMapping("put")
+    @PutMapping("edit")
     fun editExistingEntry(@RequestBody docModel: DocumentModel): ResponseEntity<HttpStatus> {
         if(request.checkForEntryInDB(docModel.payload)) {
             request.updateSingleEntry(docModel.payload, docModel.replace!!)
