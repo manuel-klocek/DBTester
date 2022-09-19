@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct
 private const val COLLECTION_NAME = "DBTesting"
 private lateinit var db: MongoCollection<Document>
 @Service
-class RequestDataService(private val mongoConf: MongoConfig) {
+class PersistenceService(private val mongoConf: MongoConfig) {
 
     private lateinit var mongo: MongoTemplate
     @PostConstruct

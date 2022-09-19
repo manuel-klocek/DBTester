@@ -1,12 +1,10 @@
 package it.schwarz.dbtesting.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import it.schwarz.dbtesting.models.DifferenceModel
 import it.schwarz.dbtesting.models.DocumentModel
 import it.schwarz.dbtesting.models.TestModel
 import it.schwarz.dbtesting.services.DifferService
-import it.schwarz.dbtesting.services.RequestDataService
+import it.schwarz.dbtesting.services.PersistenceService
 import it.schwarz.dbtesting.services.TestService
 import org.bson.Document
 import org.springframework.http.HttpStatus
@@ -16,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @CrossOrigin
 @RequestMapping("/")
-class RESTController(private val request: RequestDataService,
+class RESTController(private val request: PersistenceService,
                      private val test: TestService,
                      private val differ: DifferService) {
 
@@ -32,16 +30,15 @@ class RESTController(private val request: RequestDataService,
 
     @GetMapping("getByQuery")
     fun getEntriesByQuery(@RequestBody docModel: DocumentModel): ResponseEntity<List<Document>> {
+        println(docModel.toString())
         return ResponseEntity.ok(request.getDataByQuery(docModel.payload))
     }
 
-    //TODO Change Frontend to Content-Type Json not plain text
     @PostMapping("test")
-    fun testQuery(@RequestBody testModelString: String): ResponseEntity<List<DifferenceModel>> {
-        val testModel: TestModel = ObjectMapper().readValue(testModelString)
+    fun testQuery(@RequestBody testModel: TestModel): ResponseEntity<List<List<DifferenceModel>>> {
         val got = request.getDataByQuery(testModel.query)
         val want = testModel.want
-        var difference = listOf<DifferenceModel>()
+        var difference = listOf<List<DifferenceModel>>()
         if(!test.compare(got, want)) difference = differ.getDifference(got, want)
         return ResponseEntity.ok(difference)
     }

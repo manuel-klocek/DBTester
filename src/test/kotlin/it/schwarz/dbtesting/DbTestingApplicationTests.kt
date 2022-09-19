@@ -3,7 +3,7 @@ package it.schwarz.dbtesting
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import it.schwarz.dbtesting.models.DocumentModel
-import it.schwarz.dbtesting.services.RequestDataService
+import it.schwarz.dbtesting.services.PersistenceService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class DbTestingApplicationTests(@Autowired private val start: StartClass,
-								@Autowired private val request: RequestDataService) {
+								@Autowired private val request: PersistenceService) {
 
 	@Test
 	fun workingCheck() {
