@@ -6,6 +6,7 @@ import org.bson.Document
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -18,7 +19,7 @@ class MongoTemplateExample {
 
     private lateinit var mongoTemplate: MongoTemplate
 
-    val collectionName = "collection"
+    private val collectionName = "collection"
 
     @BeforeAll
     fun beforeAll() {
@@ -27,7 +28,7 @@ class MongoTemplateExample {
         mongoTemplate = MongoTemplate(client, "database")
     }
 
-    @AfterEach
+    @BeforeEach
     fun afterEach() {
         mongoTemplate.getCollection(collectionName).deleteMany(Filters.empty())
     }

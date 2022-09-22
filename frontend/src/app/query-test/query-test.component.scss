@@ -1,0 +1,77 @@
+.main {
+    width: 100%;
+    margin: 0 0.5rem 0 .5rem;
+}
+
+.container {
+    display: flex;
+    margin-top: 2rem;
+}
+
+.textbox-query {
+    font-size: 1rem;
+    color: whitesmoke;
+    background-color: indigo;
+    width: 43%;
+    min-height: 30rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-style: inset;
+    border-width: 0.1rem;
+    border-color: lightgreen;
+    resize: vertical;
+}
+
+.textbox-expected {
+    position: absolute;
+    right: 1rem;
+    font-size: 1rem;
+    color: black;
+    background-color: lightgreen;
+    width: 43%;
+    min-height: 30rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-style: inset;
+    border-width: 0.1rem;
+    border-color: black;
+    resize: vertical;
+}
+
+.textbox::placeholder {
+    color: whitesmoke;
+}
+
+.btn {
+    background-color: #3f51b5;
+    margin: 2rem 1rem 0 0rem;
+    width: fill;
+}
+
+.progress-bar {
+    width: fill;
+    margin-right: 1rem;
+}
+
+::ng-deep .mat-progress-bar-fill::after {
+    background: lightcoral;
+}
+
+::ng-deep .mat-progress-bar-buffer {
+    background: #3f51b5;
+}
+
+::ng-deep .mat-progress-bar {
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    border-color: transparent;
+}
+
+table {
+    width: fill;
+    margin: 2rem 1rem 0 0;
+}
+
+.container-table {
+    width: auto;
+}
