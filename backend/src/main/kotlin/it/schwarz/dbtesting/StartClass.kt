@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
 @Service
-class StartClass (val request: PersistenceService) {
+class StartClass(val persistenceService: PersistenceService) {
 
     @PostConstruct
     fun startApplication(): Boolean {
-        val got = request.read()
-        val want = request.getWant()
+        val got = persistenceService.read()
+        val want = persistenceService.getWant()
         return equals(got, want)
     }
 }

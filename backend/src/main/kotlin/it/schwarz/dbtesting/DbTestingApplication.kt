@@ -9,4 +9,3 @@ class DbTestingApplication
 fun main(args: Array<String>) {
     runApplication<DbTestingApplication>(*args)
 }
-

@@ -2,8 +2,9 @@ package it.schwarz.dbtesting.services
 
 import com.mongodb.MongoBulkWriteException
 import com.mongodb.MongoCommandException
+import com.mongodb.client.model.Filters
 import it.schwarz.dbtesting.configs.MongoConfig
-import it.schwarz.dbtesting.readAsDocuments
+import it.schwarz.dbtesting.readAsDocumentModel
 import org.bson.Document
 import org.springframework.stereotype.Service
 
@@ -15,7 +16,15 @@ class PersistenceService(mongoConfig: MongoConfig) {
     val collection = mongoConfig.getMongoTemplate().db.getCollection(collectionName)
 
     fun getWant(): List<Document> {
-        return readAsDocuments("./src/main/resources/assets/want.json")
+        return readAsDocumentModel("/assets/want.json").payload
+    }
+
+    fun insertMany(documents: List<Document>) {
+        collection.insertMany(documents)
+    }
+
+    fun deleteAll() {
+        collection.deleteMany(Filters.empty())
     }
 
     fun read(query: List<Document> = listOf()): List<Document> {
