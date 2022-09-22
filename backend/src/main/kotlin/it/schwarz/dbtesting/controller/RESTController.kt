@@ -5,7 +5,7 @@ import it.schwarz.dbtesting.models.DocumentModel
 import it.schwarz.dbtesting.models.TestModel
 import it.schwarz.dbtesting.services.DifferService
 import it.schwarz.dbtesting.services.PersistenceService
-import it.schwarz.dbtesting.services.TestService
+import it.schwarz.dbtesting.services.equals
 import org.bson.Document
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @CrossOrigin
 @RequestMapping("/")
-class RESTController(private val request: PersistenceService,
-                     private val test: TestService,
-                     private val differ: DifferService) {
+class RESTController(
+    private val request: PersistenceService,
+    private val differ: DifferService
+) {
 
     @GetMapping("getAll")
     fun getAllEntries(): ResponseEntity<List<Document>> {
@@ -39,7 +40,7 @@ class RESTController(private val request: PersistenceService,
         val got = request.getDataByQuery(testModel.query)
         val want = testModel.want
         var difference = listOf<List<DifferenceModel>>()
-        if(!test.compare(got, want)) difference = differ.getDifference(got, want)
+        if(!equals(got, want)) difference = differ.getDifference(got, want)
         return ResponseEntity.ok(difference)
     }
 
