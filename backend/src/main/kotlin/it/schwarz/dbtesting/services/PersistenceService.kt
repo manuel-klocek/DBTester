@@ -1,13 +1,11 @@
 package it.schwarz.dbtesting.services
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.mongodb.MongoBulkWriteException
 import com.mongodb.MongoCommandException
 import it.schwarz.dbtesting.configs.MongoConfig
+import it.schwarz.dbtesting.readAsDocuments
 import org.bson.Document
 import org.springframework.stereotype.Service
-import java.io.File
 
 const val collectionName = "DBTesting"
 
@@ -17,8 +15,7 @@ class PersistenceService(mongoConfig: MongoConfig) {
     val collection = mongoConfig.getMongoTemplate().db.getCollection(collectionName)
 
     fun getWant(): List<Document> {
-        val mapper = jacksonObjectMapper()
-        return mapper.readValue(File("./src/main/resources/assets/want.json").readText())
+        return readAsDocuments("./src/main/resources/assets/want.json")
     }
 
     fun read(query: List<Document> = listOf()): List<Document> {

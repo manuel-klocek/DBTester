@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mongodb.client.MongoClients
 import com.mongodb.client.model.Filters
+import it.schwarz.dbtesting.readAsDocuments
 import it.schwarz.dbtesting.readFile
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -39,12 +40,6 @@ class PipelineFromStringExample {
 
         val want = readAsDocuments("/$folderName/want.json")
         assertEquals(got, want)
-    }
-
-    private fun readAsDocuments(fileName: String): List<Document> {
-        return jacksonObjectMapper().readValue(
-            readFile(fileName)
-        )
     }
 
 }
