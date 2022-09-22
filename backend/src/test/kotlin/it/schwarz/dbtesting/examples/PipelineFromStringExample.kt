@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.mongodb.client.MongoClients
 import com.mongodb.client.model.Filters
 import org.bson.Document
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,6 +20,8 @@ class PipelineFromStringExample {
         "database"
     ).getCollection("collection")
 
+    private val folderName = "pipelineFromStringExample"
+
     @BeforeEach
     fun beforeEach(){
         collection.deleteMany(Filters.empty())
@@ -28,13 +29,14 @@ class PipelineFromStringExample {
 
     @Test
     fun `deserialize string to array of documents`() {
-        val query = readAsDocuments("/assets/query.json")
-        val given = readAsDocuments("/assets/given.json")
 
+        val given = readAsDocuments("/$folderName/given.json")
         collection.insertMany(given)
-        val got = collection.aggregate(query).toList()
-        val want = readAsDocuments("/assets/want.json")
 
+        val query = readAsDocuments("/$folderName/query.json")
+        val got = collection.aggregate(query).toList()
+
+        val want = readAsDocuments("/$folderName/want.json")
         assertEquals(got, want)
     }
 
