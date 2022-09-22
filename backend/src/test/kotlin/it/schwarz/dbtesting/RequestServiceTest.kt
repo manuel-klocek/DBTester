@@ -10,6 +10,6 @@ class RequestServiceTest(private val request: PersistenceService) {
 
     @Test
     fun testIfListFromJsonContainsElements() {
-        assertTrue(request.getExpectedOutput().isNotEmpty())
+        assertTrue(request.getWant().isNotEmpty())
     }
 }

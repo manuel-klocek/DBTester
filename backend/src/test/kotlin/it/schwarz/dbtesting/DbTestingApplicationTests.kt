@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class DbTestingApplicationTests(@Autowired private val start: StartClass,
-								@Autowired private val request: PersistenceService) {
+class DbTestingApplicationTests(
+	@Autowired private val start: StartClass,
+	@Autowired private val persistenceService: PersistenceService
+) {
 
 	@Test
 	fun workingCheck() {
@@ -20,9 +22,12 @@ class DbTestingApplicationTests(@Autowired private val start: StartClass,
 
 	@Test
 	fun something() {
-		val got = request.getDataByQuery(jacksonObjectMapper().readValue<DocumentModel>(
-			{}.javaClass.getResource("/assets/query.json")!!.readText()).payload)
-		val want = request.getExpectedOutput()
+		val query = jacksonObjectMapper().readValue<DocumentModel>(
+			readFile("/assets/query.json")
+		).payload
+		val got = persistenceService.read(query)
+		val want = persistenceService.getWant()
 		assertEquals(want, got)
 	}
+
 }

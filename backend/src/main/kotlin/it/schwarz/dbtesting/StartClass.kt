@@ -10,8 +10,8 @@ class StartClass (val request: PersistenceService) {
 
     @PostConstruct
     fun startApplication(): Boolean {
-        val got = request.getDataByQuery()
-        val want = request.getExpectedOutput()
+        val got = request.read()
+        val want = request.getWant()
         return equals(got, want)
     }
 }

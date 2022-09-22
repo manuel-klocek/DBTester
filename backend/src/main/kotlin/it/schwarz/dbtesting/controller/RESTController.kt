@@ -21,23 +21,23 @@ class RESTController(
 
     @GetMapping("getAll")
     fun getAllEntries(): ResponseEntity<List<Document>> {
-        return ResponseEntity.ok(request.getDataByQuery(arrayListOf()))
+        return ResponseEntity.ok(request.read(arrayListOf()))
     }
 
     @GetMapping("get/{id}")
     fun getEntriesById(@PathVariable id: Int): ResponseEntity<List<Document>> {
-        return ResponseEntity.ok(request.getDataByQuery(listOf(Document("\$match", Document("_id", id)))))
+        return ResponseEntity.ok(request.read(listOf(Document("\$match", Document("_id", id)))))
     }
 
     @GetMapping("getByQuery")
     fun getEntriesByQuery(@RequestBody docModel: DocumentModel): ResponseEntity<List<Document>> {
         println(docModel.toString())
-        return ResponseEntity.ok(request.getDataByQuery(docModel.payload))
+        return ResponseEntity.ok(request.read(docModel.payload))
     }
 
     @PostMapping("test")
     fun testQuery(@RequestBody testModel: TestModel): ResponseEntity<List<List<DifferenceModel>>> {
-        val got = request.getDataByQuery(testModel.query)
+        val got = request.read(testModel.query)
         val want = testModel.want
         var difference = listOf<List<DifferenceModel>>()
         if(!equals(got, want)) difference = differ.getDifference(got, want)

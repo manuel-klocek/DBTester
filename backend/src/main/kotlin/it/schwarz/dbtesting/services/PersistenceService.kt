@@ -9,18 +9,19 @@ import org.bson.Document
 import org.springframework.stereotype.Service
 import java.io.File
 
+const val collectionName = "DBTesting"
 
 @Service
 class PersistenceService(mongoConfig: MongoConfig) {
 
-    val collection = mongoConfig.getMongoTemplate().db.getCollection("DBTesting")
+    val collection = mongoConfig.getMongoTemplate().db.getCollection(collectionName)
 
-    fun getExpectedOutput(): List<Document> {
+    fun getWant(): List<Document> {
         val mapper = jacksonObjectMapper()
         return mapper.readValue(File("./src/main/resources/assets/want.json").readText())
     }
 
-    fun getDataByQuery(query: List<Document> = listOf()): List<Document> {
+    fun read(query: List<Document> = listOf()): List<Document> {
         return collection.aggregate(query).toList()
     }
 

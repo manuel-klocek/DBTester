@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mongodb.client.MongoClients
 import com.mongodb.client.model.Filters
+import it.schwarz.dbtesting.readFile
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -42,7 +43,7 @@ class PipelineFromStringExample {
 
     private fun readAsDocuments(fileName: String): List<Document> {
         return jacksonObjectMapper().readValue(
-            {}.javaClass.getResource(fileName)!!.readText()
+            readFile(fileName)
         )
     }
 
