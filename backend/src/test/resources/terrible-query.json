@@ -23,7 +23,7 @@
                         300000
                       ]
                     },
-                    "timezone": "${CURRENT_AREA}"
+                    "timezone": "Europe/Paris"
                   }
                 }
               ]
@@ -56,7 +56,7 @@
                           300000
                         ]
                       },
-                      "timezone": "${CURRENT_AREA}"
+                      "timezone": "Europe/Paris"
                     }
                   }
                 ]
@@ -89,7 +89,7 @@
                           300000
                         ]
                       },
-                      "timezone": "${CURRENT_AREA}"
+                      "timezone": "Europe/Paris"
                     }
                   }
                 ]
@@ -188,7 +188,7 @@
                           300000
                         ]
                       },
-                      "timezone": "${CURRENT_AREA}"
+                      "timezone": "Europe/Paris"
                     }
                   }
                 ]
@@ -221,7 +221,7 @@
                           300000
                         ]
                       },
-                      "timezone": "${CURRENT_AREA}"
+                      "timezone": "Europe/Paris"
                     }
                   }
                 ]
@@ -261,7 +261,7 @@
                           "$dateToString": {
                             "format": "%d-%m-%Y %H:%M",
                             "date": "$$NOW",
-                            "timezone": "${CURRENT_AREA}"
+                            "timezone": "Europe/Paris"
                           }
                         }
                       }
@@ -296,7 +296,7 @@
                               "$dateToString": {
                                 "format": "%d-%m-%Y %H:%M",
                                 "date": "$$NOW",
-                                "timezone": "${CURRENT_AREA}"
+                                "timezone": "Europe/Paris"
                               }
                             }
                           }
@@ -337,7 +337,7 @@
                           300000
                         ]
                       },
-                      "timezone": "${CURRENT_AREA}"
+                      "timezone": "Europe/Paris"
                     }
                   }
                 ]
@@ -370,7 +370,7 @@
                           300000
                         ]
                       },
-                      "timezone": "${CURRENT_AREA}"
+                      "timezone": "Europe/Paris"
                     }
                   }
                 ]
@@ -403,7 +403,7 @@
                           300000
                         ]
                       },
-                      "timezone": "${CURRENT_AREA}"
+                      "timezone": "Europe/Paris"
                     }
                   }
                 ]
@@ -436,7 +436,7 @@
                           300000
                         ]
                       },
-                      "timezone": "${CURRENT_AREA}"
+                      "timezone": "Europe/Paris"
                     }
                   }
                 ]
@@ -985,7 +985,7 @@
                 "$dateToString": {
                   "format": "%H:%M",
                   "date": "$$NOW",
-                  "timezone": "${CURRENT_AREA}"
+                  "timezone": "Europe/Paris"
                 }
               }
             ]
@@ -1105,7 +1105,7 @@
                 "$dateToString": {
                   "format": "%H:%M",
                   "date": "$$NOW",
-                  "timezone": "${CURRENT_AREA}"
+                  "timezone": "Europe/Paris"
                 }
               }
             ]
