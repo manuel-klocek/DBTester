@@ -1,10 +1,6 @@
 {
   "header": "Test",
-  "payload": [
-    {
-      "$match": {
-        "name": "Marcus Aurelius"
-      }
-    }
-  ]
+  "payload": [{"$match": {
+    "name": "Marcus Aurelius"
+  }}]
 }

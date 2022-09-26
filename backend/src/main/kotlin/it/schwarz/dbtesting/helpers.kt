@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import it.schwarz.dbtesting.models.DocumentModel
 import org.bson.Document
 
-fun readFile(relativePath: String): String {
+private fun readFile(relativePath: String): String {
     return {}.javaClass.getResource(relativePath)!!.readText()
 }
 

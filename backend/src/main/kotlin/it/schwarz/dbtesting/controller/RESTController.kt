@@ -31,7 +31,6 @@ class RESTController(
 
     @GetMapping("getByQuery")
     fun getEntriesByQuery(@RequestBody docModel: DocumentModel): ResponseEntity<List<Document>> {
-        println(docModel.toString())
         return ResponseEntity.ok(request.read(docModel.payload))
     }
 
