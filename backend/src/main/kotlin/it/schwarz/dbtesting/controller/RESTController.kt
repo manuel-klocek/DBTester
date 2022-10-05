@@ -21,7 +21,7 @@ class RESTController(
 
     @GetMapping("getAll")
     fun getAllEntries(): ResponseEntity<List<Document>> {
-        return ResponseEntity.ok(request.read(arrayListOf()))
+        return ResponseEntity.ok(request.read())
     }
 
     @GetMapping("get/{id}")
@@ -39,7 +39,7 @@ class RESTController(
         val got = request.read(testModel.query)
         val want = testModel.want
         var difference = listOf<List<DifferenceModel>>()
-        if(!equals(got, want)) difference = differ.getDifference(got, want)
+        if(!equals(got, want)) difference = differ.getDifference(want, got)
         return ResponseEntity.ok(difference)
     }
 

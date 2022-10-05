@@ -4,8 +4,15 @@ services:
     image: mongo
     container_name: mongodb
     ports:
-      - 27028:27017    
+      - "27028:27017"
     volumes:
       - mongo-data:/data/db
+  mongodb-query:
+    image: mongo
+    container_name: mongodbQuery
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/query
 volumes:
   mongo-data:

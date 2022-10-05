@@ -25,7 +25,7 @@ Initial focus on MongoDB
 
 # TODO
 
-## get rid of start code
+## get rid of start code - D
 
 Currently the app executes some test case using the StartClass.
 This should be executed in a test case.
@@ -68,11 +68,11 @@ Das heisst gewisse Model Klassen werden zu Interfaces die dann entweder von Mong
 
 Ausserdem müssen wir bei Postgres Dinge wie Datentypen und CREATE TABLE statements unterstützen.
 
-Ich baue einen Vorschlag mit den Givens zusammen.w
+Ich baue einen Vorschlag mit den Givens zusammen.
 
 ## Challenge: MongoDB Compass Aggregation Tab Nachbauen
 
-Im COmpass Aggregation Tab wird das Ergebnis nach jedem Pipeline Step angezeigt.
+Im Compass Aggregation Tab wird das Ergebnis nach jedem Pipeline Step angezeigt.
 https://www.google.com/search?q=compass+aggregation+tab&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiVqer257H6AhUfgf0HHXiBBw4Q_AUoAXoECAEQAw&biw=2048&bih=1304&dpr=1
 Ich weiss nicht genau wie die das Performant hinbekommen.
 Das nachzubauen scheint mir eine interessante Aufgabe.
