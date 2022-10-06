@@ -1,0 +1,13 @@
+{
+  "header": "Test",
+  "query": [{"$match": {
+    "name": "Marcus Aurelius"
+  }}]
+,
+  "want": [
+    {
+      "_id": 2,
+      "name": "Seneca",
+      "occupation": "Politician"
+    }]
+}

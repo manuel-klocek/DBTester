@@ -2,6 +2,7 @@ package it.schwarz.dbtesting
 
 import it.schwarz.dbtesting.services.PersistenceService
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,11 +12,10 @@ class DbTestingApplicationTests(
 	@Autowired private val persistenceService: PersistenceService
 ) {
 
-	//Not running -> is destroying the database state of mongodb
-	/*@BeforeEach
+	@BeforeEach
 	fun beforeEach(){
 		persistenceService.deleteAll()
-	}*/
+	}
 
 	@Test
 	fun something() {

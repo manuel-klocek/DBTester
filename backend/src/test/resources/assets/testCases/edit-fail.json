@@ -1,0 +1,16 @@
+{
+  "header": "Test",
+  "payload": [
+    {
+      "_id": 4,
+      "name": "John Doe"
+    }
+  ],
+  "replace": [
+    {
+      "_id": 1,
+      "name": "Marcus Aurelius",
+      "occupation": "Emperor"
+    }
+  ]
+}

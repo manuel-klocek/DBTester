@@ -29,7 +29,7 @@ class RESTController(
         return ResponseEntity.ok(request.read(listOf(Document("\$match", Document("_id", id)))))
     }
 
-    @GetMapping("getByQuery")
+    @PostMapping("getByQuery")
     fun getEntriesByQuery(@RequestBody docModel: DocumentModel): ResponseEntity<List<Document>> {
         return ResponseEntity.ok(request.read(docModel.payload))
     }
@@ -50,13 +50,13 @@ class RESTController(
     }
 
     @PutMapping("edit")
-    fun editExistingEntry(@RequestBody docModel: DocumentModel): ResponseEntity<HttpStatus> {
+    fun editExistingEntry(@RequestBody docModel: DocumentModel): ResponseEntity<String> {
         if(request.checkForEntryInDB(docModel.payload)) {
             request.updateSingleEntry(docModel.payload, docModel.replace!!)
         } else {
-            println("Item does not exist in DB. Use PostMethod (/post) instead")
+            return ResponseEntity.ok("Item does not exist in DB. Use PostMethod (/post) instead!")
         }
-        return ResponseEntity.ok(HttpStatus.ACCEPTED)
+        return ResponseEntity.ok(HttpStatus.ACCEPTED.toString())
     }
 
     @DeleteMapping("delete")

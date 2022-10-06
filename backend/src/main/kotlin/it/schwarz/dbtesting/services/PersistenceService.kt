@@ -4,7 +4,7 @@ import com.mongodb.MongoBulkWriteException
 import com.mongodb.MongoCommandException
 import com.mongodb.client.model.Filters
 import it.schwarz.dbtesting.configs.MongoConfig
-import it.schwarz.dbtesting.readAsDocumentModel
+import it.schwarz.dbtesting.readAsDocuments
 import org.bson.Document
 import org.springframework.stereotype.Service
 
@@ -16,7 +16,7 @@ class PersistenceService(mongoConfig: MongoConfig) {
     val collection = mongoConfig.getMongoTemplate().db.getCollection(collectionName)
 
     fun getWant(): List<Document> {
-        return readAsDocumentModel("/assets/want.json").payload
+        return readAsDocuments("/assets/want.json")
     }
 
     fun insertMany(documents: List<Document>) {
@@ -55,6 +55,6 @@ class PersistenceService(mongoConfig: MongoConfig) {
     }
 
     fun checkForEntryInDB(got: List<Document>): Boolean {
-        return !collection.find(got[0]).equals("[]")
+        return collection.find(got[0]).toList().isNotEmpty()
     }
 }
