@@ -8,6 +8,7 @@ import org.bson.Document
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.net.URI
@@ -17,6 +18,7 @@ import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ApiTests (@Autowired val persistenceService: PersistenceService) {
 
     val uri: String = "http://localhost:8080/"
@@ -108,7 +110,10 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
     @Test
     fun editEntryTest() {
         //Setup
-        persistenceService.updateSingleEntry(listOf(Document("name", "Marcus Aurelius")), listOf(Document("name", "John Doe")))
+        val doc = Document()
+        doc["_id"] = 1
+        doc["name"] = "John Doe"
+        persistenceService.updateSingleEntry(listOf(Document("name", "Marcus Aurelius")), listOf(doc))
 
         val request = builder
             .uri(URI(uri + "edit"))
@@ -126,7 +131,7 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
         val failResponse = client.send(failRequest, BodyHandlers.ofString())
 
         assertTrue(response.body() == "202 ACCEPTED")
-        assertTrue(failResponse.body() == "Item does not exist in DB. Use PostMethod (/post) instead!")
+        assertTrue(failResponse.body() == "Item does not exist in DB or multiple Objects got found!")
         assertTrue(persistenceService.checkForEntryInDB(listOf(Document("name", "Marcus Aurelius"))))
     }
 

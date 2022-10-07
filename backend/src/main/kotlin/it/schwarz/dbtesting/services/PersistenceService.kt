@@ -55,6 +55,6 @@ class PersistenceService(mongoConfig: MongoConfig) {
     }
 
     fun checkForEntryInDB(got: List<Document>): Boolean {
-        return collection.find(got[0]).toList().isNotEmpty()
+        return collection.find(got[0]).toList().size == 1
     }
 }

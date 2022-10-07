@@ -1,0 +1,1288 @@
+[
+  {
+    "$match": {
+      "$or": [
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$history.arrivalTime",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$returns.arrivalTime",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$stockchange.execTime",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$ne": [
+                      {
+                        "$ifNull": [
+                          {
+                            "$let": {
+                              "vars": {
+                                "writeoffFilter": {
+                                  "$filter": {
+                                    "input": "$writeOff",
+                                    "as": "writeOff",
+                                    "cond": {
+                                      "$gte": [
+                                        "$$writeOff.execTime",
+                                        {
+                                          "$arrayElemAt": [
+                                            "$writeOff.execTime",
+                                            -1
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              },
+                              "in": {
+                                "$add": [
+                                  {
+                                    "$reduce": {
+                                      "input": "$$writeoffFilter.writeOff",
+                                      "initialValue": 0,
+                                      "in": {
+                                        "$add": [
+                                          "$$value",
+                                          "$$this"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        "$ifNull": [
+                          {
+                            "$arrayElemAt": [
+                              "$livestock.writeOffs",
+                              -1
+                            ]
+                          },
+                          0
+                        ]
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$store_claims.execTime",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$store_returns.execTime",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$lte": [
+                      {
+                        "$subtract": [
+                          {
+                            "$dateFromString": {
+                              "dateString": {
+                                "$concat": [
+                                  "$uploadDate",
+                                  {
+                                    "$arrayElemAt": [
+                                      "$new_deliverys.ARRIVAL",
+                                      -1
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "$dateFromString": {
+                              "dateString": {
+                                "$dateToString": {
+                                  "format": "%d-%m-%Y %H:%M",
+                                  "date": "$$NOW",
+                                  "timezone": "Europe/Paris"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      300000
+                    ]
+                  },
+                  "then": {
+                    "$cond": {
+                      "if": {
+                        "$gte": [
+                          {
+                            "$subtract": [
+                              {
+                                "$dateFromString": {
+                                  "dateString": {
+                                    "$concat": [
+                                      "$uploadDate",
+                                      {
+                                        "$arrayElemAt": [
+                                          "$new_deliverys.ARRIVAL",
+                                          -1
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "$dateFromString": {
+                                  "dateString": {
+                                    "$dateToString": {
+                                      "format": "%d-%m-%Y %H:%M",
+                                      "date": "$$NOW",
+                                      "timezone": "Europe/Paris"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          -300000
+                        ]
+                      },
+                      "then": 1,
+                      "else": 0
+                    }
+                  },
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$lastCorrection.lastCorrection",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$store_transfers.execTime",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$formCorrections.execTime",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        },
+        {
+          "$expr": {
+            "$eq": [
+              {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$new_deliverys.execTime",
+                          -1
+                        ]
+                      },
+                      {
+                        "$dateToString": {
+                          "format": "%H:%M",
+                          "date": {
+                            "$subtract": [
+                              "$$NOW",
+                              300000
+                            ]
+                          },
+                          "timezone": "Europe/Paris"
+                        }
+                      }
+                    ]
+                  },
+                  "then": 1,
+                  "else": 0
+                }
+              },
+              1
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "$addFields": {
+      "new_deliverys.ARRIVAL": {
+        "$ifNull": [
+          {
+            "$cond": {
+              "if": {
+                "$eq": [
+                  {
+                    "$arrayElemAt": [
+                      "$new_deliverys.ARRIVAL",
+                      -1
+                    ]
+                  },
+                  "null"
+                ]
+              },
+              "then": "00:01",
+              "else": {
+                "$cond": {
+                  "if": {
+                    "$gte": [
+                      {
+                        "$arrayElemAt": [
+                          "$new_deliverys.ARRIVAL",
+                          -1
+                        ]
+                      },
+                      "21:30"
+                    ]
+                  },
+                  "then": "00:01",
+                  "else": {
+                    "$arrayElemAt": [
+                      "$new_deliverys.ARRIVAL",
+                      -1
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "$$REMOVE"
+        ]
+      },
+      "stockchange": {
+        "$cond": {
+          "if": {
+            "$gt": [
+              {
+                "$arrayElemAt": [
+                  "$lastCorrection.lastCorrection",
+                  -1
+                ]
+              },
+              {
+                "$arrayElemAt": [
+                  "$stockchange.formTime",
+                  -1
+                ]
+              }
+            ]
+          },
+          "then": [],
+          "else": "$stockchange"
+        }
+      },
+      "writeOff": {
+        "$filter": {
+          "input": "$writeOff",
+          "as": "writeOff",
+          "cond": {
+            "$gte": [
+              "$$writeOff.execTime",
+              {
+                "$arrayElemAt": [
+                  "$writeOff.execTime",
+                  -1
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "formCorrections": {
+        "$ifNull": [
+          {
+            "$cond": {
+              "if": {
+                "$eq": [
+                  {
+                    "$type": "$stockchange"
+                  },
+                  "array"
+                ]
+              },
+              "then": {
+                "$toDouble": "0"
+              },
+              "else": {
+                "$toDouble": {
+                  "$arrayElemAt": [
+                    "$formCorrections.formCorrections",
+                    -1
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$toDouble": "0"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "new_deliverys": {
+        "$cond": {
+          "if": {
+            "$eq": [
+              {
+                "$type": "$new_deliverys"
+              },
+              "object"
+            ]
+          },
+          "then": "$$REMOVE",
+          "else": "$new_deliverys"
+        }
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "QTY": "$QUANTITY",
+      "history": {
+        "$filter": {
+          "input": "$history",
+          "as": "sales",
+          "cond": {
+            "$gte": [
+              "$$sales.execTime",
+              {
+                "$arrayElemAt": [
+                  "$stockchange.correctiontime",
+                  -1
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "returns": {
+        "$filter": {
+          "input": "$returns",
+          "as": "return",
+          "cond": {
+            "$gte": [
+              "$$return.execTime",
+              {
+                "$arrayElemAt": [
+                  "$stockchange.correctiontime",
+                  -1
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "writeOff": {
+        "$ifNull": [
+          {
+            "$filter": {
+              "input": "$writeOff",
+              "as": "writeOff",
+              "cond": {
+                "$gte": [
+                  "$$writeOff.formTime",
+                  {
+                    "$arrayElemAt": [
+                      "$stockchange.correctiontime",
+                      -1
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          []
+        ]
+      },
+      "store_claims": {
+        "$ifNull": [
+          {
+            "$filter": {
+              "input": "$store_claims",
+              "as": "store_claims",
+              "cond": {
+                "$gte": [
+                  "$$store_claims.execTime",
+                  {
+                    "$arrayElemAt": [
+                      "$stockchange.correctiontime",
+                      -1
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          []
+        ]
+      },
+      "store_returns": {
+        "$ifNull": [
+          {
+            "$filter": {
+              "input": "$store_returns",
+              "as": "store_returns",
+              "cond": {
+                "$gte": [
+                  "$$store_returns.execTime",
+                  {
+                    "$arrayElemAt": [
+                      "$stockchange.correctiontime",
+                      -1
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          []
+        ]
+      },
+      "store_transfers": {
+        "$ifNull": [
+          {
+            "$filter": {
+              "input": "$store_transfers",
+              "as": "store_transfers",
+              "cond": {
+                "$gte": [
+                  "$$store_transfers.execTime",
+                  {
+                    "$arrayElemAt": [
+                      "$stockchange.correctiontime",
+                      -1
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          []
+        ]
+      },
+      "new_deliverys": {
+        "$ifNull": [
+          {
+            "$filter": {
+              "input": "$new_deliverys",
+              "as": "new_deliverys",
+              "cond": {
+                "$gte": [
+                  "$$new_deliverys.ARRIVAL",
+                  {
+                    "$arrayElemAt": [
+                      "$stockchange.correctiontime",
+                      -1
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          []
+        ]
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "QTY": {
+        "$cond": {
+          "if": {
+            "$eq": [
+              "$QTY",
+              "null"
+            ]
+          },
+          "then": {
+            "$cond": {
+              "if": {
+                "$eq": [
+                  "$lastlivestock.lastlivestock",
+                  "null"
+                ]
+              },
+              "then": "null",
+              "else": {
+                "$arrayElemAt": [
+                  "$lastlivestock.lastlivestock",
+                  0
+                ]
+              }
+            }
+          },
+          "else": "$QTY"
+        }
+      },
+      "sales": {
+        "$add": [
+          {
+            "$reduce": {
+              "input": "$history.sales",
+              "initialValue": 0,
+              "in": {
+                "$add": [
+                  "$$value",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "returns": {
+        "$add": [
+          {
+            "$reduce": {
+              "input": "$returns.returns",
+              "initialValue": 0,
+              "in": {
+                "$add": [
+                  "$$value",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "store_claims": {
+        "$add": [
+          {
+            "$reduce": {
+              "input": "$store_claims.store_claims",
+              "initialValue": 0,
+              "in": {
+                "$add": [
+                  "$$value",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "writeOff": {
+        "$add": [
+          {
+            "$reduce": {
+              "input": "$writeOff.writeOff",
+              "initialValue": 0,
+              "in": {
+                "$add": [
+                  "$$value",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "store_returns": {
+        "$add": [
+          {
+            "$reduce": {
+              "input": "$store_returns.store_returns",
+              "initialValue": 0,
+              "in": {
+                "$add": [
+                  "$$value",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "store_transfers": {
+        "$add": [
+          {
+            "$reduce": {
+              "input": "$store_transfers.store_transfers",
+              "initialValue": 0,
+              "in": {
+                "$add": [
+                  "$$value",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ARRIVAL": {
+        "$arrayElemAt": [
+          {
+            "$cond": {
+              "if": {
+                "$eq": [
+                  "$new_deliverys.ARRIVAL",
+                  "null"
+                ]
+              },
+              "then": "23:59",
+              "else": "$new_deliverys.ARRIVAL"
+            }
+          },
+          -1
+        ]
+      },
+      "new_deliverys": {
+        "$add": [
+          {
+            "$reduce": {
+              "input": "$new_deliverys.new_deliverys",
+              "initialValue": 0,
+              "in": {
+                "$add": [
+                  "$$value",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "QTY": {
+        "$cond": {
+          "if": {
+            "$gte": [
+              {
+                "$arrayElemAt": [
+                  "$stockchange.stockchange",
+                  -1
+                ]
+              },
+              0
+            ]
+          },
+          "then": {
+            "$arrayElemAt": [
+              "$stockchange.stockchange",
+              -1
+            ]
+          },
+          "else": "$QTY"
+        }
+      },
+      "deliverys": {
+        "$cond": {
+          "if": {
+            "$eq": [
+              {
+                "$ifNull": [
+                  "$deliverys.deliverys",
+                  0
+                ]
+              },
+              0
+            ]
+          },
+          "then": 0,
+          "else": {
+            "$arrayElemAt": [
+              "$deliverys.deliverys",
+              0
+            ]
+          }
+        }
+      },
+      "sales": {
+        "$ifNull": [
+          "$sales",
+          0
+        ]
+      },
+      "returns": {
+        "$ifNull": [
+          "$returns",
+          0
+        ]
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "Validstock": {
+        "$cond": [
+          {
+            "$eq": [
+              "$QTY",
+              "null"
+            ]
+          },
+          false,
+          true
+        ]
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "QTY": {
+        "$add": [
+          {
+            "$toDouble": {
+              "$cond": [
+                {
+                  "$eq": [
+                    "$QTY",
+                    "null"
+                  ]
+                },
+                0,
+                "$QTY"
+              ]
+            }
+          },
+          "$deliverys"
+        ]
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "QTY": {
+        "$ifNull": [
+          {
+            "$cond": {
+              "if": {
+                "$lte": [
+                  "$ARRIVAL",
+                  {
+                    "$dateToString": {
+                      "format": "%H:%M",
+                      "date": "$$NOW",
+                      "timezone": "Europe/Paris"
+                    }
+                  }
+                ]
+              },
+              "then": {
+                "$add": [
+                  "$QTY",
+                  "$new_deliverys"
+                ]
+              },
+              "else": "$QTY"
+            }
+          },
+          "$QTY"
+        ]
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "livestock": {
+        "$cond": {
+          "if": {
+            "$eq": [
+              "$sales",
+              0
+            ]
+          },
+          "then": {
+            "$subtract": [
+              "$QTY",
+              {
+                "$add": [
+                  "$writeOff",
+                  "$store_claims",
+                  "$store_returns",
+                  "$store_transfers",
+                  "$formCorrections",
+                  {
+                    "$multiply": [
+                      "$returns",
+                      -1
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "else": {
+            "$subtract": [
+              "$QTY",
+              {
+                "$add": [
+                  "$sales",
+                  "$writeOff",
+                  "$store_claims",
+                  "$store_returns",
+                  "$store_transfers",
+                  "$formCorrections",
+                  {
+                    "$multiply": [
+                      "$returns",
+                      -1
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "rundate": "$$NOW"
+    }
+  },
+  {
+    "$addFields": {
+      "Validstock": {
+        "$cond": {
+          "if": {
+            "$eq": [
+              {
+                "$lt": [
+                  "$livestock",
+                  0
+                ]
+              },
+              true
+            ]
+          },
+          "then": false,
+          "else": true
+        }
+      },
+      "writeOffs": "$writeOff",
+      "store_claim": "$store_claims",
+      "store_return": "$store_returns",
+      "store_transfer": "$store_transfers",
+      "stockchanges": {
+        "$ifNull": [
+          {
+            "$arrayElemAt": [
+              "$stockchange.stockchange",
+              -1
+            ]
+          },
+          0
+        ]
+      },
+      "livestock": {
+        "$cond": {
+          "if": {
+            "$and": [
+              {
+                "$lt": [
+                  "$livestock",
+                  0
+                ]
+              },
+              {
+                "$gt": [
+                  "$ARRIVAL",
+                  {
+                    "$dateToString": {
+                      "format": "%H:%M",
+                      "date": "$$NOW",
+                      "timezone": "Europe/Paris"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "then": {
+            "$add": [
+              "$livestock",
+              "$new_deliverys"
+            ]
+          },
+          "else": "$livestock"
+        }
+      },
+      "SHELF_SPACE": {
+        "$toDouble": {
+          "$cond": {
+            "if": {
+              "$eq": [
+                "$SHELF_SPACE",
+                "null"
+              ]
+            },
+            "then": 0,
+            "else": "$SHELF_SPACE"
+          }
+        }
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "stockIndicator": {
+        "$cond": {
+          "if": {
+            "$eq": [
+              "$SHELF_SPACE",
+              0
+            ]
+          },
+          "then": 3,
+          "else": {
+            "$switch": {
+              "branches": [
+                {
+                  "case": {
+                    "$gte": [
+                      {
+                        "$divide": [
+                          "$livestock",
+                          "$SHELF_SPACE"
+                        ]
+                      },
+                      0.3
+                    ]
+                  },
+                  "then": 2
+                },
+                {
+                  "case": {
+                    "$eq": [
+                      {
+                        "$and": [
+                          {
+                            "$lt": [
+                              {
+                                "$divide": [
+                                  "$livestock",
+                                  "$SHELF_SPACE"
+                                ]
+                              },
+                              0.3
+                            ]
+                          },
+                          {
+                            "$gte": [
+                              {
+                                "$divide": [
+                                  "$livestock",
+                                  "$SHELF_SPACE"
+                                ]
+                              },
+                              0.1
+                            ]
+                          }
+                        ]
+                      },
+                      true
+                    ]
+                  },
+                  "then": 1
+                }
+              ],
+              "default": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "$project": {
+      "QTY": 0,
+      "_id": 0,
+      "executionDate": 0,
+      "productId": 0,
+      "storeId": 0,
+      "writeOff": 0,
+      "store_claims": 0,
+      "store_returns": 0,
+      "store_transfers": 0
+    }
+  },
+  {
+    "$addFields": {
+      "upsert": false,
+      "updateFilter": "PRODUCT,LOCATION,uploadDate",
+      "updatePush": "livestock=livestock,execTime,Validstock,sales,rundate,writeOffs,store_claim,store_return,store_transfer,stockchanges,formCorrections,returns,stockIndicator",
+      "replaceArray": false
+    }
+  }
+]

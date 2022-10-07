@@ -1,16 +1,22 @@
 [
   [
     {
-      "expected": "_id=2",
-      "got": "_id=1"
+      "_id": {
+        "got": "1",
+        "expected": "2"
+      }
     },
     {
-      "expected": "name=Seneca",
-      "got": "name=Marcus Aurelius"
+      "name": {
+        "got": "Marcus Aurelius",
+        "expected": "Seneca"
+      }
     },
     {
-      "expected": "occupation=Politician",
-      "got": "occupation=Emperor"
+      "occupation": {
+        "got": "Emperor",
+        "expected": "Politician"
+      }
     }
   ]
 ]

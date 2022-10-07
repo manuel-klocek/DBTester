@@ -32,12 +32,12 @@ This should be executed in a test case.
 Usually Rest APIs just sit there waiting for requests.
 If you want to test them manually use a Rest Client (browser, curl, postman)
 
-## terrible-query testcase
+## terrible-query testcase - Almost Done
 
 Ich habe given und want für die terrible query gepusht.
 In der query war ein Platzhalter für die Zeitzone ( ${timezone} ) den ADBS ersetzt.
 Ich habe das manuell durch "Europe/Paris" ersetzt.
-Um durch den ersten $match stage der Aggregation zu kommen darf die Zeit die im Feld arrivalTime im letzten array element des history arrays steht nicht älter als 5 Minuten sein.
+Um durch den ersten $match stage der Aggregation zu kommen, darf die Zeit die im Feld arrivalTime im letzten array element des history arrays steht nicht älter als 5 Minuten sein.
 Dieser Zustand muss also vor dem Ausführen der Query hergestellt werden (etwa durch ein Update).
 
 ## Datenmodell & REST Api

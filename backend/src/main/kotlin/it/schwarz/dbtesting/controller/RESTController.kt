@@ -1,8 +1,8 @@
 package it.schwarz.dbtesting.controller
 
-import it.schwarz.dbtesting.models.DifferenceModel
 import it.schwarz.dbtesting.models.DocumentModel
 import it.schwarz.dbtesting.models.TestModel
+import it.schwarz.dbtesting.services.AggregationService
 import it.schwarz.dbtesting.services.DifferService
 import it.schwarz.dbtesting.services.PersistenceService
 import it.schwarz.dbtesting.services.equals
@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/")
 class RESTController(
     private val request: PersistenceService,
-    private val differ: DifferService
+    private val difference: DifferService,
+    private val aggregate: AggregationService
 ) {
 
     @GetMapping("getAll")
@@ -35,26 +36,27 @@ class RESTController(
     }
 
     @PostMapping("test")
-    fun testQuery(@RequestBody testModel: TestModel): ResponseEntity<List<List<DifferenceModel>>> {
+    fun testQuery(@RequestBody testModel: TestModel): ResponseEntity<List<List<Document>>> {
         val got = request.read(testModel.query)
         val want = testModel.want
-        var difference = listOf<List<DifferenceModel>>()
-        if(!equals(got, want)) difference = differ.getDifference(want, got)
-        return ResponseEntity.ok(difference)
+        var diff = listOf<List<Document>>()
+        if(!equals(got, want)) diff = difference.get(want, got)
+        return ResponseEntity.ok(diff)
     }
 
     @PostMapping("create")
-    fun addMultipleEntries(@RequestBody docModel: DocumentModel): ResponseEntity<HttpStatus> {
-        request.createMultipleEntries(docModel.payload)
-        return ResponseEntity.ok(HttpStatus.CREATED)
+    fun addMultipleEntries(@RequestBody docModel: DocumentModel): ResponseEntity<String> {
+        if(!request.createMultipleEntries(docModel.payload)) return ResponseEntity.ok("Item with same Id already exists!")
+        return ResponseEntity.ok(HttpStatus.CREATED.toString())
     }
 
     @PutMapping("edit")
     fun editExistingEntry(@RequestBody docModel: DocumentModel): ResponseEntity<String> {
         if(request.checkForEntryInDB(docModel.payload)) {
             request.updateSingleEntry(docModel.payload, docModel.replace!!)
+            aggregate.aggregate(docModel.payload, docModel.replace!!)
         } else {
-            return ResponseEntity.ok("Item does not exist in DB. Use PostMethod (/post) instead!")
+            return ResponseEntity.ok("Item does not exist in DB or multiple Objects got found!")
         }
         return ResponseEntity.ok(HttpStatus.ACCEPTED.toString())
     }
