@@ -53,8 +53,9 @@ class RESTController(
     @PutMapping("edit")
     fun editExistingEntry(@RequestBody docModel: DocumentModel): ResponseEntity<String> {
         if(request.checkForEntryInDB(docModel.payload)) {
+            val currentState = request.collection.find(docModel.payload[0]).toList()
             request.updateSingleEntry(docModel.payload, docModel.replace!!)
-            aggregate.aggregate(docModel.payload, docModel.replace!!)
+            aggregate.aggregate(currentState, docModel.replace!!)
         } else {
             return ResponseEntity.ok("Item does not exist in DB or multiple Objects got found!")
         }

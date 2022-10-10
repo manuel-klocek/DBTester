@@ -18,3 +18,7 @@ fun readAsDocumentModel(relativePath: String): DocumentModel {
     val string = readFile(relativePath)
     return jacksonObjectMapper().readValue(string)
 }
+
+fun getSubDocument(doc: Document, key: String): Document{
+    return doc[key] as Document
+}

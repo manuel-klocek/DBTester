@@ -34,6 +34,8 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
 
         given = readAsDocuments("/assets/given.json")
         query = readAsDocumentModel("/assets/query.json")
+        persistenceService.collection.deleteMany(Document())
+        persistenceService.collection.insertMany(given)
     }
 
     @Test
@@ -93,18 +95,18 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
 
     @Test
     fun addMultipleEntriesTest() {
+        //Setup
+        persistenceService.deleteSingleEntry(listOf(Document("_id", 3)))
+
         val request = builder
             .uri(URI(uri + "create"))
             .headers("Content-Type", "application/json")
             .POST(BodyPublishers.ofString({}.javaClass.getResource("/assets/testCases/create.json")!!.readText()))
             .build()
 
-        val response = client.send(request, BodyHandlers.ofString())
+        client.send(request, BodyHandlers.ofString())
 
-        //delete inserted Entry to contain db state
-        persistenceService.deleteSingleEntry(listOf(Document("_id", 4)))
-
-        assertTrue(response.statusCode() == 200)
+        assertEquals(given, persistenceService.read())
     }
 
     @Test

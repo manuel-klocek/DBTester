@@ -1,0 +1,19 @@
+[{
+  "_id": {
+    "_id": 1,
+    "timestamp": {
+      "$numberLong": "1665251883724"
+    }
+  },
+  "changes": [
+    {
+      "_id": 1
+    },
+    {
+      "name": "Marcus Aurelius"
+    },
+    {
+      "occupation": "Emperorr"
+    }
+  ]
+}]
