@@ -8,8 +8,9 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Suppress("UNCHECKED_CAST")
 class AggregationServiceTest(@Autowired private val aggregationService: AggregationService) {
 
     @Test
