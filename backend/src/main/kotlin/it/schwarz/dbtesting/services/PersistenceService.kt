@@ -51,10 +51,35 @@ class PersistenceService(mongoConfig: MongoConfig) {
     }
 
     fun updateSingleEntry(got: List<Document>, want: List<Document>): Boolean {
-        return collection.findOneAndReplace(got[0], want[0]) !== null
+        val gotDocs = getEntryByProperties(got)
+        if(gotDocs.size != 1) return false
+
+        val gotKeys = mutableListOf<String>()
+        val wantKeys = mutableListOf<String>()
+
+        gotDocs.forEach { doc -> gotKeys.add(doc.keys.toList()[0].toString()) }
+        want.forEach { doc -> wantKeys.add(doc.keys.toList()[0].toString()) }
+
+        return collection.findOneAndReplace(got[0], checkForDeletionsAndRemove(want[0])[0]) !== null
     }
 
     fun checkForEntryInDB(got: List<Document>): Boolean {
         return collection.find(got[0]).toList().size == 1
+    }
+
+    private fun getEntryByProperties(got: List<Document>): List<Document> {
+        return collection.find(got[0]).toList()
+    }
+
+    private fun checkForDeletionsAndRemove(want: Document): List<Document> {
+        val doc = Document()
+        for(prop in want){
+            val key = prop.key
+            val value = prop.value
+            if(value != "DELETE!") {
+                doc[key] = value
+            }
+        }
+        return listOf(doc)
     }
 }

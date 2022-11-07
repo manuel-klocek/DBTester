@@ -50,6 +50,7 @@ class RESTController(
         return ResponseEntity.ok(HttpStatus.CREATED.toString())
     }
 
+    //TO DELETE A PROPERTY YOU NEED TO WRITE <DELETE!> *in caps without <>*
     @PutMapping("edit")
     fun editExistingEntry(@RequestBody docModel: DocumentModel): ResponseEntity<String> {
         if(request.checkForEntryInDB(docModel.payload)) {

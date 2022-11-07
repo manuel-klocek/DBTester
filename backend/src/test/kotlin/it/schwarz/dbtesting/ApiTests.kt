@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.net.URI
@@ -116,7 +115,7 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
         val doc = Document()
         doc["_id"] = 1
         doc["name"] = "John Doe"
-        persistenceService.updateSingleEntry(listOf(Document("name", "Marcus Aurelius")), listOf(doc))
+        persistenceService.updateSingleEntry(listOf(Document("_id", 1)), listOf(doc))
 
         val request = builder
             .uri(URI(uri + "edit"))
