@@ -47,20 +47,26 @@ class RESTController(
     @PostMapping("create")
     fun addMultipleEntries(@RequestBody docModel: DocumentModel): ResponseEntity<String> {
         if(!request.createMultipleEntries(docModel.payload)) return ResponseEntity.ok("Item with same Id already exists!")
-        return ResponseEntity.ok(HttpStatus.CREATED.toString())
+        return ResponseEntity.ok(HttpStatus.CREATED.toString() +
+                " Item got stored in DB: true\n" +
+                "Item got aggregated: ${aggregate.set(new = docModel.payload.first())}")
     }
 
     //TO DELETE A PROPERTY YOU NEED TO WRITE <DELETE!> *in caps without <>*
     @PutMapping("edit")
     fun editExistingEntry(@RequestBody docModel: DocumentModel): ResponseEntity<String> {
-        if(request.checkForEntryInDB(docModel.payload)) {
-            val currentState = request.collection.find(docModel.payload[0]).toList()
-            request.updateSingleEntry(docModel.payload, docModel.replace!!)
-            aggregate.aggregate(currentState, docModel.replace!!)
+        val payload = docModel.payload.first()
+        val replace = docModel.replace!!.first()
+        var done = false
+        if(request.checkForEntryInDB(payload)) {
+            val currentState = request.collection.find(payload).first()
+            if(request.updateSingleEntry(payload, replace)) done = aggregate.set(currentState!!, replace)
         } else {
             return ResponseEntity.ok("Item does not exist in DB or multiple Objects got found!")
         }
-        return ResponseEntity.ok(HttpStatus.ACCEPTED.toString())
+        return ResponseEntity.ok(HttpStatus.ACCEPTED.toString() +
+                " Item got edited successfully: true\n" +
+                " Item got aggregated: $done")
     }
 
     @DeleteMapping("delete")

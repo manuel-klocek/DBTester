@@ -50,28 +50,27 @@ class PersistenceService(mongoConfig: MongoConfig) {
         return true
     }
 
-    fun updateSingleEntry(got: List<Document>, want: List<Document>): Boolean {
-        val gotDocs = getEntryByProperties(got)
-        if(gotDocs.size != 1) return false
+    fun updateSingleEntry(gotDoc: Document, want: Document): Boolean {
+        val got = getEntryByProperties(gotDoc)
 
         val gotKeys = mutableListOf<String>()
         val wantKeys = mutableListOf<String>()
 
-        gotDocs.forEach { doc -> gotKeys.add(doc.keys.toList()[0].toString()) }
-        want.forEach { doc -> wantKeys.add(doc.keys.toList()[0].toString()) }
+        got.forEach { gotKeys.add(it.key) }
+        want.forEach { wantKeys.add(it.key) }
 
-        return collection.findOneAndReplace(got[0], checkForDeletionsAndRemove(want[0])[0]) !== null
+        return collection.findOneAndUpdate(got, Document("\$set", checkForDeletionsAndRemove(want))) !== null
     }
 
-    fun checkForEntryInDB(got: List<Document>): Boolean {
-        return collection.find(got[0]).toList().size == 1
+    fun checkForEntryInDB(got: Document): Boolean {
+        return collection.find(got).toList().size == 1
     }
 
-    private fun getEntryByProperties(got: List<Document>): List<Document> {
-        return collection.find(got[0]).toList()
+    private fun getEntryByProperties(got: Document): Document {
+        return collection.find(got).first()!!
     }
 
-    private fun checkForDeletionsAndRemove(want: Document): List<Document> {
+    private fun checkForDeletionsAndRemove(want: Document): Document {
         val doc = Document()
         for(prop in want){
             val key = prop.key
@@ -80,6 +79,6 @@ class PersistenceService(mongoConfig: MongoConfig) {
                 doc[key] = value
             }
         }
-        return listOf(doc)
+        return doc
     }
 }

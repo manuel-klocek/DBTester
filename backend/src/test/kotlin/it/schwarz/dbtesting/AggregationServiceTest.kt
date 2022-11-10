@@ -16,11 +16,11 @@ class AggregationServiceTest(@Autowired private val aggregationService: Aggregat
     @Test
     fun aggregationTest() {
         aggregationService.collection.deleteMany(Document())
-        val oldState = listOf<Document>()
+        val oldState = Document()
         val newState = readAsDocumentModel("/assets/testCases/aggregate.json")
         val want = readAsDocuments("/assets/testCases/aggregate-want.json")[0]["changes"] as List<Document>
 
-        aggregationService.aggregate(oldState, newState.replace!!)
+        aggregationService.set(oldState, newState.replace!!.first())
 
         assertEquals(mapToListOfDocument(want), aggregationService.collection.find(Document()).toList()[0]["changes"] as List<Document>)
     }

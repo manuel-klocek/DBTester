@@ -17,6 +17,6 @@ class AggregationController(private val aggregation: AggregationService) {
     @GetMapping("id={id}")
     fun getById(@PathVariable id: Int): ResponseEntity<List<Document>> {
         val aggregations = aggregation.collection.find(Document("_id._id", id)).toList()
-        return ResponseEntity.ok(aggregation.layout(aggregations))
+        return ResponseEntity.ok(aggregation.get(aggregations))
     }
 }

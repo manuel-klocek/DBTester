@@ -17,34 +17,38 @@ class AggregationService(private val difference: DifferService) {
     )
         .getCollection("AggregationCollection")
 
-    fun aggregate(old: List<Document>, new: List<Document>) {
-        if(old.size > 1 || new.size != 1) return
-        val differences = difference.get(new, old)[0]
-        if (differences.isEmpty()) return
+    fun set(old: Document = Document(), new: Document): Boolean {
+        if(new.isEmpty()) return false
 
-        val changes = mutableListOf<Document>()
-        for (difference in differences) {
-            val key = difference.keys.toList()[0]
-            val subDoc: Document = getSubDocument(difference, key)
-            changes.add(Document(key, subDoc["expected"]))
+        val editedOld = Document()
+        old.forEach {
+            if(it.key != "_id") editedOld[it.key] = it.value
         }
 
-        val idDoc = Document()
-        idDoc["_id"] = new[0].getInteger("_id")
-        idDoc["timestamp"] = Date().time
+        val differences = difference.get(listOf(new), listOf(editedOld), false).first()
+        if (differences.isEmpty()) return false
 
-        val doc = Document()
-        doc["_id"] = idDoc
-        doc["changes"] = changes
+        val changes = differences.map {
+            val key = it.keys.first()
+            val subDoc = getSubDocument(it, key)
+            Document(key, subDoc["expected"])
+        }
 
-        if (!checkIfChangeAlreadyExists(changes) &&
-        !checkIfTimestampAlreadyExists(idDoc)) {
+        val idDoc = Document(mapOf(
+            "_id" to if(new.getInteger("_id") != null) new.getInteger("_id") else old.getInteger("_id"),
+            "timestamp" to Date().time
+        ))
+
+        val doc = Document(mapOf(
+            "_id" to idDoc,
+            "changes" to changes
+        ))
+
+        if (!checkIfTimestampAlreadyExists(idDoc)) {
             collection.insertOne(doc)
+            return true
         }
-    }
-
-    private fun checkIfChangeAlreadyExists(changes: List<Document>): Boolean {
-        return collection.find(Document("changes", changes)).toList().isNotEmpty()
+        return false
     }
 
     private fun checkIfTimestampAlreadyExists(idDoc: Document): Boolean {
@@ -52,28 +56,20 @@ class AggregationService(private val difference: DifferService) {
     }
 
 
-    fun layout(aggregationsDocs: List<Document>): List<Document> {
+    fun get(aggregationsDocs: List<Document>): List<Document> {
 
         val aggregationList = mutableListOf<Document>()
-        val firstAggregation = aggregationsDocs[0]["changes"] as List<Document>
         var keyList = mutableListOf<String>()
-        var oldState = firstAggregation
 
-        //First implementation of an object
-        firstAggregation.forEach { doc -> keyList.add(doc.keys.toList()[0].toString()) }
-        aggregationList.add(Document("new", firstAggregation))
-
-        for(i in 1 until aggregationsDocs.size){
-            val aggregations: List<Document> = aggregationsDocs[i]["changes"] as List<Document>
+        for(document in aggregationsDocs){
+            val aggregations: List<Document> = document["changes"] as List<Document>
             var newState = aggregations
-            val doc = Document()
             keyList = checkKeys(aggregations, keyList)
             if(!checkForAllKeys(aggregations, keyList)) newState = addPropertiesToElement(aggregations, keyList, aggregationsDocs)
-            doc["new"] = newState
-            doc["old"] = oldState
 
-            aggregationList.add(doc)
-            oldState = newState
+            aggregationList.add(Document(mapOf(
+                "new" to newState
+            )))
         }
         return aggregationList
     }
