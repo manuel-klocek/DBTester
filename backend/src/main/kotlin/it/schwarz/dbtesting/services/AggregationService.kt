@@ -18,31 +18,35 @@ class AggregationService(private val difference: DifferService) {
         .getCollection("AggregationCollection")
 
     fun set(old: Document = Document(), new: Document): Boolean {
-        if(new.isEmpty()) return false
+        if (new.isEmpty()) return false
 
         val editedOld = Document()
         old.forEach {
-            if(it.key != "_id") editedOld[it.key] = it.value
+            if (it.key != "_id") editedOld[it.key] = it.value
         }
 
-        val differences = difference.get(listOf(new), listOf(editedOld), false).first()
+        val differences = difference.get(listOf(editedOld), listOf(new), false).first()
         if (differences.isEmpty()) return false
 
         val changes = differences.map {
             val key = it.keys.first()
             val subDoc = getSubDocument(it, key)
-            Document(key, subDoc["expected"])
+            Document(key, subDoc["got"])
         }
 
-        val idDoc = Document(mapOf(
-            "_id" to if(new.getInteger("_id") != null) new.getInteger("_id") else old.getInteger("_id"),
-            "timestamp" to Date().time
-        ))
+        val idDoc = Document(
+            mapOf(
+                "_id" to if (new.getInteger("_id") != null) new.getInteger("_id") else old.getInteger("_id"),
+                "timestamp" to Date().time
+            )
+        )
 
-        val doc = Document(mapOf(
-            "_id" to idDoc,
-            "changes" to changes
-        ))
+        val doc = Document(
+            mapOf(
+                "_id" to idDoc,
+                "changes" to changes
+            )
+        )
 
         if (!checkIfTimestampAlreadyExists(idDoc)) {
             collection.insertOne(doc)
@@ -57,20 +61,33 @@ class AggregationService(private val difference: DifferService) {
 
 
     fun get(aggregationsDocs: List<Document>): List<Document> {
-
-        val aggregationList = mutableListOf<Document>()
+        var aggregationList = mutableListOf<Document>()
         var keyList = mutableListOf<String>()
+        val changes = mutableListOf<List<Document>>()
+        val timestamps = mutableListOf<Long>()
 
-        for(document in aggregationsDocs){
+        for (document in aggregationsDocs) {
             val aggregations: List<Document> = document["changes"] as List<Document>
             var newState = aggregations
             keyList = checkKeys(aggregations, keyList)
-            if(!checkForAllKeys(aggregations, keyList)) newState = addPropertiesToElement(aggregations, keyList, aggregationsDocs)
+            changes.add(aggregations)
+            timestamps.add(getSubDocument(document, "_id").getLong("timestamp"))
+            if (!checkForAllKeys(aggregations, keyList)) newState =
+                addPropertiesToElement(aggregations, keyList, aggregationsDocs)
 
-            aggregationList.add(Document(mapOf(
-                "new" to newState
-            )))
+            aggregationList.add(
+                Document(
+                    mapOf(
+                        "new" to newState
+                    )
+                )
+            )
         }
+
+        aggregationList = fixOrder(aggregationList)
+        aggregationList = addTimestamps(aggregationList, timestamps)
+        aggregationList = addChangedKeys(aggregationList, changes)
+
         return aggregationList
     }
 
@@ -78,11 +95,11 @@ class AggregationService(private val difference: DifferService) {
         val returnList: MutableList<String>
         val aggKeyList = mutableListOf<String>()
         aggregations.forEach { doc -> aggKeyList.add(doc.keys.toList()[0] as String) }
-        if(keyList.isEmpty() && aggKeyList.isNotEmpty()) returnList = aggKeyList
+        if (keyList.isEmpty() && aggKeyList.isNotEmpty()) returnList = aggKeyList
         else {
             returnList = keyList as MutableList<String>
-            for(key in aggKeyList){
-                if(keyList.contains(key)) continue
+            for (key in aggKeyList) {
+                if (keyList.contains(key)) continue
                 returnList.add(key)
             }
         }
@@ -93,31 +110,97 @@ class AggregationService(private val difference: DifferService) {
         return docs.size == keys.size
     }
 
-    private fun addPropertiesToElement(docs: List<Document>, keys: List<String>, allAggregations: List<Document>): List<Document> {
+    private fun addPropertiesToElement(
+        docs: List<Document>,
+        keys: List<String>,
+        allAggregations: List<Document>
+    ): List<Document> {
         val returnList = mutableListOf<Document>()
         val keyList = mutableListOf<String>()
         val notContainedKeys = mutableListOf<String>()
-        docs.forEach { doc -> keyList.add(doc.keys.toList()[0].toString())
-            returnList.add(doc) }
+        docs.reversed().forEach {
+            keyList.add(it.keys.first().toString())
+            returnList.add(it)
+        }
 
         //Aggregation doesn't contain all alive keys used in the past
-        keys.forEach { key -> if(!keyList.contains(key)) notContainedKeys.add(key) }
+        keys.forEach { if (!keyList.contains(it)) notContainedKeys.add(it) }
         //New Key that is unknown yet
-        keyList.forEach { key -> if(!keys.contains(key) && !notContainedKeys.contains(key)) notContainedKeys.add(key) }
+        keyList.forEach { if (!keys.contains(it) && !notContainedKeys.contains(it)) notContainedKeys.add(it) }
 
-        for(key in notContainedKeys.reversed()) {
+        for (key in notContainedKeys) {
             returnList.add(Document(key, searchForLastValueOf(key, allAggregations)))
         }
 
-        return returnList.reversed()
+        return returnList
     }
 
-    private fun searchForLastValueOf(key: String, allAggregations: List<Document>): String {
-        var value = ""
-        for(i in allAggregations.size - 1 downTo 0) {
-            (allAggregations[i]["changes"] as List<Document>).forEach { doc -> if(doc.keys.contains(key)) value = doc.getString(key)}
-            if(value.isNotEmpty()) break
+    private fun searchForLastValueOf(key: String, allAggregations: List<Document>): Any? {
+        allAggregations.reversed().forEach { aggregation ->
+            (aggregation["changes"] as List<Document>).forEach {
+                if (it.keys.contains(key)) return it.getValue(key)
+            }
         }
-        return value
+        return null
+    }
+
+    private fun fixOrder(aggregations: List<Document>): MutableList<Document> {
+        val keyList = mutableListOf<String>()
+        val changes = mutableListOf<List<Document>>()
+        aggregations.forEach { aggregation ->
+            changes.add(aggregation["new"] as List<Document>)
+        }
+
+        //adds all keys to keyList
+        changes.forEach { change ->
+            change.forEach { doc ->
+                doc.forEach {
+                    if (!keyList.contains(it.key)) keyList.add(it.key)
+                }
+            }
+        }
+
+        val returnList = mutableListOf<Document>()
+        for (change in changes) {
+            val itemList = mutableListOf<Document>()
+            for (key in keyList) {
+                for (doc in change) {
+                    if(doc.keys.first() == key) {
+                        itemList.add(doc)
+                        continue
+                    }
+                }
+            }
+            returnList.add(Document("new", itemList))
+        }
+        return returnList
+    }
+
+    fun addTimestamps(aggregations: List<Document>, timestamps: List<Long>): MutableList<Document> {
+        val aggregationList = mutableListOf<Document>()
+        for((index, element) in aggregations.withIndex()) {
+            element["timestamp"] = timestamps[index]
+            aggregationList.add(element)
+        }
+        return aggregationList
+    }
+
+    private fun addChangedKeys(list: List<Document>, changesList: List<List<Document>>): MutableList<Document> {
+        val aggregationList = mutableListOf<Document>()
+
+        val changeKeys = mutableListOf<List<String>>()
+        for(changes in changesList) {
+            val keys = mutableListOf<String>()
+            for(change in changes){
+                keys.add(change.keys.first())
+            }
+            changeKeys.add(keys)
+        }
+
+        for((index, change) in list.withIndex()) {
+            change["changedKeys"] = changeKeys[index]
+            aggregationList.add(change)
+        }
+        return aggregationList
     }
 }

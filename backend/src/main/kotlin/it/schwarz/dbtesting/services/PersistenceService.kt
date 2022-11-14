@@ -59,7 +59,12 @@ class PersistenceService(mongoConfig: MongoConfig) {
         got.forEach { gotKeys.add(it.key) }
         want.forEach { wantKeys.add(it.key) }
 
-        return collection.findOneAndUpdate(got, Document("\$set", checkForDeletionsAndRemove(want))) !== null
+        val update = Document(mapOf(
+            "\$set" to getUpdateDoc(want),
+            "\$unset" to getDeleteDoc(want)
+        ))
+
+        return collection.updateOne(got, update).wasAcknowledged()
     }
 
     fun checkForEntryInDB(got: Document): Boolean {
@@ -70,13 +75,25 @@ class PersistenceService(mongoConfig: MongoConfig) {
         return collection.find(got).first()!!
     }
 
-    private fun checkForDeletionsAndRemove(want: Document): Document {
+    private fun getUpdateDoc(got: Document): Document {
         val doc = Document()
-        for(prop in want){
+        for(prop in got){
             val key = prop.key
             val value = prop.value
             if(value != "DELETE!") {
                 doc[key] = value
+            }
+        }
+        return doc
+    }
+
+    private fun getDeleteDoc(got: Document): Document {
+        val doc = Document()
+        for(prop in got){
+            val key = prop.key
+            val value = prop.value
+            if(value == "DELETE!") {
+                doc[key] = ""
             }
         }
         return doc

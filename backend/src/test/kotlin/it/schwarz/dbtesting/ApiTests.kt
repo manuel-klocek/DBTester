@@ -88,7 +88,7 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
 
         val response = client.send(request, BodyHandlers.ofString())
         val got: List<List<Document>> = jacksonObjectMapper().readValue(response.body())
-        val want: List<List<Document>> = jacksonObjectMapper().readValue({}.javaClass.getResource("/assets/testCases/case-want.json")!!.readText())
+        val want: List<List<Document>> = jacksonObjectMapper().readValue({}.javaClass.getResource("/assets/testCases/case-want.json")!!)
 
         assertEquals(want, got)
     }
@@ -115,7 +115,7 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
         val doc = Document()
         doc["_id"] = 1
         doc["name"] = "John Doe"
-        persistenceService.updateSingleEntry(listOf(Document("_id", 1)), listOf(doc))
+        persistenceService.updateSingleEntry(Document("_id", 1), doc)
 
         val request = builder
             .uri(URI(uri + "edit"))
@@ -132,9 +132,9 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
         val response = client.send(request, BodyHandlers.ofString())
         val failResponse = client.send(failRequest, BodyHandlers.ofString())
 
-        assertTrue(response.body() == "202 ACCEPTED")
+        assertTrue(response.body().contains("202 ACCEPTED"))
         assertTrue(failResponse.body() == "Item does not exist in DB or multiple Objects got found!")
-        assertTrue(persistenceService.checkForEntryInDB(listOf(Document("name", "Marcus Aurelius"))))
+        assertTrue(persistenceService.checkForEntryInDB(Document("name", "Marcus Aurelius")))
     }
 
     @Test
@@ -151,7 +151,7 @@ class ApiTests (@Autowired val persistenceService: PersistenceService) {
         val response = client.send(request, BodyHandlers.ofString())
 
         assertTrue(response.statusCode() == 200)
-        assertFalse(persistenceService.checkForEntryInDB(listOf(Document("_id", 4))))
+        assertFalse(persistenceService.checkForEntryInDB(Document("_id", 4)))
     }
 
 

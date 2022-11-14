@@ -2,8 +2,8 @@
   [
     {
       "_id": {
-        "got": "1",
-        "expected": "2"
+        "got": 1,
+        "expected": 2
       }
     },
     {
