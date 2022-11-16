@@ -12,7 +12,7 @@ import java.util.*
 class AggregationService(private val difference: DifferService) {
 
     val collection = MongoTemplate(
-        MongoClients.create("mongodb://localhost:27017"),
+        MongoClients.create("mongodb://localhost:27028"),
         "AggregationDB"
     )
         .getCollection("AggregationCollection")
